@@ -18,6 +18,12 @@ Route::get('/', [MessageController::class, 'index']);
 
 Route::post('/insert-message', [MessageController::class, 'insert']);
 
+Route::post('/edit-message', [MessageController::class, 'edit']);
+
+Route::post('/message/get-message', [MessageController::class, 'getDetail']);
+
+Route::post('/delete-message', [MessageController::class, 'delete']);
+
 Route::get('/login', function () {
     return view('login');
 });

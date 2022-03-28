@@ -35,6 +35,7 @@
                 </div>
             </div>
         </main>
+
         <footer>
             <p class="font12">Copyright &copy;
                 <script>
@@ -44,6 +45,7 @@
             </p>
         </footer>
 
+        {{-- Edit Modal --}}
         <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
             aria-hidden="true">
             <div class="modal-dialog">
@@ -53,96 +55,107 @@
                                 aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                         <h4 class="modal-title" id="myModalLabel">Edit Item</h4>
                     </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label>Name</label>
-                            <input type="text" class="form-control" value="Yutaka Tokunaga">
-                        </div>
-                        <div class="form-group">
-                            <label>Title</label>
-                            <input type="text" class="form-control" value="Here is your title">
-                            <p class="small text-danger mt-5">*Your title must be 3 to 16 characters long</p>
-                        </div>
-                        <div class="form-group">
-                            <label>Body</label>
-                            <textarea rows="5"
-                                class="form-control">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed laoreet, risus nec suscipit luctus, tortor nibh scelerisque est, nec suscipit justo odio id arcu. Nulla nec sagittis ante, non luctus nulla. Sed imperdiet ullamcorper tortor, ac vulputate mauris. In pulvinar metus eget imperdiet ullamcorper. Vivamus a dolor tempor diam sollicitudin interdum.</textarea>
-                        </div>
-                        <div class="form-group row">
-                            <div class="col-md-4">
-                                <img class="img-responsive" alt="" src="https://via.placeholder.com/500x500">
+                    <form enctype="multipart/form-data" id="formEdit">
+                        {{-- action="{{ url('edit-message') }}" method="POST" --}}
+                        @csrf
+                        <div class="modal-body">
+                            <input type="hidden" name="idEdit" id="idEdit">
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input type="text" class="form-control @error('nameEdit') is-invalid @enderror"
+                                    id="nameEdit" name="nameEdit">
+                                @error('nameEdit')
+                                    <div class="invalid-input">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
-                            <div class="col-md-8 pl-0">
-                                <label>Choose image from your computer :</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control upload-form" value="No file chosen" readonly>
-                                    <span class="input-group-btn">
-                                        <span class="btn btn-default btn-file">
-                                            <i class="fa fa-folder-open"></i>&nbsp;Browse <input type="file" name="image"
-                                                multiple>
+                            <div class="form-group">
+                                <label>Title</label>
+                                <input type="text" class="form-control @error('title') is-invalid @enderror" id="titleEdit"
+                                    name="titleEdit">
+                                {{-- <p class="small text-danger mt-5">*Your title must be 3 to 16 characters long</p> --}}
+                                @error('title')
+                                    <div class="invalid-input">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                            <div class="form-group">
+                                <label>Body</label>
+                                <textarea rows="5" class="form-control @error('body') is-invalid @enderror" id="bodyEdit" name="bodyEdit"></textarea>
+                                @error('body')
+                                    <div class="invalid-input">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-md-4">
+                                    <img class="img-responsive" alt="" id="imageDisplay">
+                                </div>
+                                <div class="col-md-8 pl-0">
+                                    <label>Choose image from your computer :</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control upload-form" id="imageNameEdit" readonly>
+                                        <span class="input-group-btn">
+                                            <span class="btn btn-default btn-file">
+                                                <i class="fa fa-folder-open"></i>&nbsp;Browse <input type="file"
+                                                    id="imageEdit" name="imageEdit" multiple>
+                                                <span class="text-danger" id="image-input-error"></span>
+                                            </span>
                                         </span>
-                                    </span>
-                                </div>
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox">Delete image
-                                    </label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" id="deleteImage">Delete image
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <label>Password</label>
+                                <input type="password" class="form-control @error('password') is-invalid @enderror"
+                                    id="passwordEdit" name="passwordEdit">
+                                @error('password')
+                                    <div class="invalid-input">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Password</label>
-                            <input type="password" class="form-control">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Save changes</button>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
+
+        {{-- Delete Modal --}}
         <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
             aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal"><span
-                                aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                        <h4 class="modal-title" id="myModalLabel">Delete Data</h4>
-                    </div>
-                    <div class="modal-body pad-20">
-                        <p>Are you sure want to delete this item?</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-danger">Delete</button>
-                    </div>
+                    <form action="{{ url('delete-message') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="id" id="idDelete">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal"><span
+                                    aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                            <h4 class="modal-title" id="myModalLabel">Delete Data</h4>
+                        </div>
+                        <div class="modal-body pad-20">
+                            <p>Are you sure want to delete this item?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-
-        <script>
-            // INPUT TYPE FILE
-            $(document).on('change', '.btn-file :file', function() {
-                var input = $(this),
-                    numFiles = input.get(0).files ? input.get(0).files.length : 1,
-                    label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
-                input.trigger('fileselect', [numFiles, label]);
-            });
-
-            $(document).ready(function() {
-                $('.btn-file :file').on('fileselect', function(event, numFiles, label) {
-                    var input = $(this).parents('.input-group').find(':text'),
-                        log = numFiles > 1 ? numFiles + ' files selected' : label;
-
-                    if (input.length) {
-                        input.val(log);
-                    } else {
-                        if (log) alert(log);
-                    }
-                });
-            });
-        </script>
     </body>
 @endsection

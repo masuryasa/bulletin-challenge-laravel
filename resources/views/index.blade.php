@@ -10,16 +10,34 @@
                 @csrf
                 <div class="form-group">
                     <label>Name</label>
-                    <input type="text" name="name" class="form-control">
-                    <p class="small text-danger mt-5">*Your name must be 3 to 16 characters long</p>
+                    <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
+                        value="{{ old('name') }}" required autofocus>
+                    {{-- <p class="small text-danger mt-5">*Your name must be 3 to 16 characters long</p> --}}
+                    @error('name')
+                        <div class="invalid-input">
+                            {{ $message }}
+                        </div>
+                    @enderror
                 </div>
                 <div class="form-group">
                     <label>Title</label>
-                    <input type="text" name="title" class="form-control">
+                    <input type="text" name="title" class="form-control @error('title') is-invalid @enderror"
+                        value="{{ old('title') }}" required>
+                    @error('title')
+                        <div class="invalid-input">
+                            {{ $message }}
+                        </div>
+                    @enderror
                 </div>
                 <div class="form-group">
                     <label>Body</label>
-                    <textarea rows="5" name="body" class="form-control"></textarea>
+                    <textarea rows="5" name="body" class="form-control @error('body') is-invalid @enderror"
+                        required>{{ old('body') }}</textarea>
+                    @error('body')
+                        <div class="invalid-input">
+                            {{ $message }}
+                        </div>
+                    @enderror
                 </div>
                 <div class="form-group">
                     <label>Choose image from your computer :</label>
@@ -34,7 +52,12 @@
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" name="password" class="form-control">
+                    <input type="password" name="password" class="form-control @error('password') is-invalid @enderror">
+                    @error('password')
+                        <div class="invalid-input">
+                            {{ $message }}
+                        </div>
+                    @enderror
                 </div>
                 <div class="text-center mt-30 mb-30">
                     <button type="submit" class="btn btn-primary">Submit</button>
@@ -46,7 +69,7 @@
                 <div class="post">
                     <div class="clearfix">
                         <div class="pull-left">
-                            <h2 class="mb-5 text-green"><b>{{ $message->title }}</b></h2>
+                            <h2 class="mb-5 text-green wrap-text"><b>{{ $message->title }}</b></h2>
                         </div>
                         <div class="pull-right text-right">
                             <p class="text-lgray">{{ $message->date }}<br /><span
@@ -56,7 +79,7 @@
                     </div>
                     <h4 class="mb-20">{{ $message->name }} <span
                             class="text-id">{{ $message->id }}</span></h4>
-                    <p>{{ $message->body }}</p>
+                    <p class="wrap-text">{{ $message->body }}</p>
                     @if (isset($message->image_path))
                         <img class="img-responsive img-post my-15"
                             src="{{ asset('storage/images/' . explode('/', $message->image_path)[2]) }}"
@@ -69,9 +92,11 @@
                                 <label for="inputPassword2" class="sr-only">Password</label>
                                 <input type="password" class="form-control" id="inputPassword2" placeholder="Password">
                             </div>
-                            <a type="submit" class="btn btn-default mb-2" data-toggle="modal" data-target="#editModal"><i
+                            <a type="submit" class="btn btn-default mb-2 editMessage" data-toggle="modal"
+                                data-target="#editModal" data-id="{{ $message->id }}"><i
                                     class="fa fa-pencil p-3"></i></a>
-                            <a type="submit" class="btn btn-danger mb-2" data-toggle="modal" data-target="#deleteModal"><i
+                            <a type="submit" class="btn btn-danger mb-2 deleteMessage" data-toggle="modal"
+                                data-target="#deleteModal" data-id="{{ $message->id }}"><i
                                     class="fa fa-trash p-3"></i></a>
                         </form>
                     @endif
