@@ -21,7 +21,16 @@
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                         <ul class="nav navbar-nav navbar-right">
-                            <li><a href="{{ url('login') }}">Login</a></li>
+                            @auth
+                                <li>
+                                    <form action="{{ url('logout') }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="logout">Logout</button>
+                                    </form>
+                                </li>
+                            @else
+                                <li><a href="{{ url('login') }}">Login</a></li>
+                            @endauth
                             <li><a href="{{ url('register') }}">Register</a></li>
                         </ul>
                     </div><!-- /.navbar-collapse -->

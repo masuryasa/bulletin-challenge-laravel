@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,31 +15,29 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [MessageController::class, 'index']);
+Route::get('', [MessageController::class, 'index']);
 
-Route::post('/insert-message', [MessageController::class, 'insert']);
+Route::post('insert-message', [MessageController::class, 'insert']);
 
-Route::post('/edit-message', [MessageController::class, 'edit']);
+Route::post('edit-message', [MessageController::class, 'edit']);
 
-Route::post('/message/get-message', [MessageController::class, 'getDetail']);
+Route::post('password-validation', [MessageController::class, 'passwordValidation']);
 
-Route::post('/delete-message', [MessageController::class, 'delete']);
+Route::post('message/get-message', [MessageController::class, 'getDetail']);
 
-Route::get('/login', function () {
-    return view('login');
-});
-
-Route::get('/register', function () {
-    return view('register');
-});
+Route::post('delete-message', [MessageController::class, 'delete']);
 
 Route::prefix('register')->group(function () {
-    Route::get('/success', function () {
-        return view('register-success');
-    });
-    Route::get('/success/2', function () {
-        return view('register-success-2');
-    });
+    Route::get('', [UserController::class, 'index']);
+
+    Route::post('confirm', [UserController::class, 'confirm']);
+
+    Route::post('', [UserController::class, 'register']);
 });
 
-Route::get('test', [MessageController::class, 'index']);
+// Route::prefix('login')->group(function () {
+Route::get('login', [UserController::class, 'login']);
+Route::post('login', [UserController::class, 'authenticate']);
+// });
+
+Route::post('logout', [UserController::class, 'logout']);

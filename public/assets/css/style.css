@@ -253,3 +253,16 @@ footer {
 .hide {
     display: none;
 }
+
+button.logout {
+    all: unset;
+    cursor: pointer;
+    color: #777;
+    position: relative;
+    display: block;
+    padding: 15px 15px;
+}
+
+button.logout:hover {
+    color: #6DDA5F;
+}

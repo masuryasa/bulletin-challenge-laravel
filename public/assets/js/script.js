@@ -24,22 +24,56 @@ $(document).ready(function() {
     });
 
     $('.editMessage').on('click', function(){
+        // bermasalah pada bagian update, pembacaan input password tidak sesuai sehingga ID dan password selalu tidak match
         const id = $(this).data('id');
+        const password = $('#inputPassword2').val();
+        // console.log("password: ",password);
+        // console.log("id: ",id);
+        // $('.formPassword').map(i => console.log($('.formPassword')[i]));
 
         $.ajax({
-            url: 'message/get-message',
-            data: {id:id},
+            url: 'password-validation',
+            data: {
+                id: id,
+                password: password
+            },
             method: 'post',
-            success: function(data){
-                $('#idEdit').val(data.id);
-                $('#nameEdit').val(data.name);
-                $('#titleEdit').val(data.title);
-                $('#bodyEdit').val(data.body);
-                $('#imageDisplay').attr('src',data.image_path ? 'storage/images/'+(data.image_path).split('/')[2] : null);
-                $('#imageNameEdit').val(data.image_name ? data.image_name : null);
-                $('#passwordEdit').val(data.pass);
+            success: (response) => {
+                if (response.length > 0) {
+                    // console.log("resp if: ", response);
+                    $('#idEdit').val(response[0].id);
+                    $('#nameEdit').val(response[0].name);
+                    $('#titleEdit').val(response[0].title);
+                    $('#bodyEdit').val(response[0].body);
+                    $('#imageDisplay').attr('src',response[0].image_path ? 'storage/images/'+(response[0].image_path).split('/')[2] : null);
+                    $('#imageNameEdit').val(response[0].image_name ? response[0].image_name : null);
+                } else {
+                    console.log("resp else: ", response);
+                    $('.modal').modal('hide');
+                }
+
+                // $.ajax({
+                //     url: 'message/get-message',
+                //     data: {id:id},
+                //     method: 'post',
+                //     success: function(data){
+                //         $('#idEdit').val(data.id);
+                //         $('#nameEdit').val(data.name);
+                //         $('#titleEdit').val(data.title);
+                //         $('#bodyEdit').val(data.body);
+                //         $('#imageDisplay').attr('src',data.image_path ? 'storage/images/'+(data.image_path).split('/')[2] : null);
+                //         $('#imageNameEdit').val(data.image_name ? data.image_name : null);
+                //         $('#passwordEdit').val(data.pass);
+                //     }
+                // });
+            },
+            error: (response) => {
+                // $('.modal').modal('hide');
+                console.log("response: ",response);
             }
         });
+
+        // $('.formPassword').map(i => $('.formPassword')[i].reset());
     });
 
     $('#formEdit').submit(function(e){
@@ -53,12 +87,10 @@ $(document).ready(function() {
            contentType: false,
            processData: false,
            success: (response) => {
-               if (response) {
-                //    $('.modal').modal('hide');
-                   location.reload();
-                }
+               response ? location.reload() : null;
             },
-            error: function(response){
+            error: (response) => {
+                // console.log("err: ",response);
                 alert("Fill the form input correctly!");
             }
         });
@@ -66,10 +98,9 @@ $(document).ready(function() {
 
     $('.deleteMessage').on('click', function(){
         const id = $(this).data('id');
-        const site_url = window.location.href;
 
         $.ajax({
-            url: site_url+'message/get-message',
+            url: 'message/get-message',
             data: {id:id},
             method: 'post',
             success: function(data){
@@ -78,4 +109,6 @@ $(document).ready(function() {
             }
         });
     });
+
+    $('#rowAlert').fadeTo(3000, 500).fadeOut();
 });
