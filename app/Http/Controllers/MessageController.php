@@ -4,21 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Message;
 
 class MessageController extends Controller
 {
     public function index()
     {
-        $messages = DB::table('messages')
-            ->orderByDesc('id')
-            ->get();
+        $messages = Message::orderBy('id', 'DESC')->with('user')->get();
 
         return view('index', ['messages' => $messages]);
     }
 
-    public function insert(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
             'name' => 'nullable|min:3|max:16',
@@ -28,40 +26,35 @@ class MessageController extends Controller
             'image' => 'nullable|image|mimes:png,jpg,svg,jpeg,gif|max:1024',
         ]);
 
-        $name = $request->input('name');
-        $name_id = $request->input('name_id') ?? null;
-        $title = $request->input('title');
-        $body = $request->input('body');
-        $password = $request->input('password');
+        $message = new Message;
+
+        $message->name = $request->name;
+        $message->title = $request->title;
+        $message->body = $request->body;
+        $message->password = is_null($request->password) ? null : Hash::make($request->password);
         $image = $request->file('image');
-        $image_path = !is_null($image) ? $image->store('public/images') : null;
-        $image_name = !is_null($image) ? $image->getClientOriginalName() : null;
+        $message->image_path = !is_null($image) ? $image->store('public/images') : null;
+        $message->image_name = !is_null($image) ? $image->getClientOriginalName() : null;
+        $message->user_id = $request->user_id;
 
-        date_default_timezone_set("Asia/Singapore");
-        $message = ['name' => $name, 'name_id' => $name_id, 'title' => $title, 'body' => $body, 'pass' => Hash::make($password), 'image_path' => $image_path, 'image_name' => $image_name, 'date' => date("d-m-Y"), 'time' => date("H:i")];
-
-        DB::table('messages')->insertGetId($message);
+        $message->save();
 
         return back();
     }
 
     public function passwordValidation(Request $request)
     {
-        $id = $request->input('id');
-        $password = $request->input('password');
+        $id = (int)$request->id;
+        $password = $request->password;
 
-        $hashedPassword = DB::table('messages')
-            ->where('id', (int)$id)
-            ->select('pass')
-            ->first();
-        // ->get();
-        // return $password->pass;
-        $valid = DB::table('messages')
-            ->where('id', (int)$id)
-            ->when(Hash::check($password, $hashedPassword->pass), function ($query) {
-                return $query;
-            })
-            // ->where('pass', Hash::make($password))
+        if (is_null($password)) return null;
+        else (int)$password;
+
+        $hashedPassword = Message::where('id', $id)->first()->password;
+
+        $valid = Message::where('id', $id)->when(Hash::check($password, $hashedPassword), function ($query) {
+            return $query;
+        })
             ->get();
 
         return $valid;
@@ -69,15 +62,14 @@ class MessageController extends Controller
 
     public function getDetail(Request $request)
     {
-        $id = $request->input('id');
-        $message = DB::table('messages')->find($id);
+        $message = Message::all();
 
-        return $message;
+        return $message->find($request->id);
     }
 
-    public function edit(Request $request)
+    public function update(Request $request)
     {
-        $validatedData = $request->validate([
+        $request->validate([
             'nameEdit' => 'required|min:3|max:16',
             'titleEdit' => 'required|min:10|max:32',
             'bodyEdit' => 'required|min:10|max:200',
@@ -86,33 +78,25 @@ class MessageController extends Controller
 
         ]);
 
-        $id = $validatedData['idEdit'];
-        $name = $validatedData['nameEdit'];
-        $title = $validatedData['titleEdit'];
-        $body = $validatedData['bodyEdit'];
-        $password = $validatedData['passwordEdit'];
+        $messageUpdate = Message::find($request->idEdit);
+
+        $messageUpdate->name = $request->nameEdit;
+        $messageUpdate->title = $request->titleEdit;
+        $messageUpdate->body = $request->bodyEdit;
+        $password = $request->passwordEdit;
+        !empty($password) ? $messageUpdate->password = Hash::make($password) : null;
         $image = $request->file('imageEdit');
-        $image_path = !is_null($image) ? $image->store('public/images') : null;
-        $image_name = !is_null($image) ? $image->getClientOriginalName() : null;
+        !is_null($image) ? $messageUpdate->image_path = $image->store('public/images') : null;
+        !is_null($image) ? $messageUpdate->image_name = $image->getClientOriginalName() : null;
 
-        date_default_timezone_set("Asia/Singapore");
-        $message = ['name' => $name, 'title' => $title, 'body' => $body, 'image_path' => $image_path, 'image_name' => $image_name, 'date' => date("d-m-Y"), 'time' => date("H:i")];
-        $message = !empty($password) ? array_merge($message, ['pass' => Hash::make($password)]) : array_merge($message, ['pass' => NULL]);
-
-        $update = DB::table('messages')
-            ->where('id', $id)
-            ->update($message);
+        $update = $messageUpdate->save();
 
         return $update;
     }
 
     public function delete(Request $request)
     {
-        $id = $request->input('id');
-
-        DB::table('messages')
-            ->where('id', $id)
-            ->delete();
+        Message::find($request->id)->delete();
 
         return back();
     }

@@ -19,12 +19,16 @@ class CreateMessagesTable extends Migration
             $table->string('name_id')->nullable();
             $table->string('title');
             $table->string('body');
-            $table->string('pass')->nullable();
+            $table->string('password')->nullable();
             $table->string('image_path')->nullable();
             $table->string('image_name')->nullable();
             $table->string('date');
             $table->string('time');
             $table->timestamps();
+        });
+
+        Schema::table('messages', function (Blueprint $table) {
+            $table->dropColumn(['date', 'time']);
         });
     }
 

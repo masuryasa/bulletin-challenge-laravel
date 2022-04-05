@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,29 +16,27 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('', [MessageController::class, 'index']);
+Route::get('', [MessageController::class, 'index'])->name('index');
 
-Route::post('insert-message', [MessageController::class, 'insert']);
-
-Route::post('edit-message', [MessageController::class, 'edit']);
+Route::prefix('message')->group(function () {
+    Route::post('store', [MessageController::class, 'store'])->name('store');
+    Route::post('get', [MessageController::class, 'getDetail'])->name('detail');
+    Route::post('update', [MessageController::class, 'update'])->name('update');
+    Route::post('delete', [MessageController::class, 'delete'])->name('delete');
+});
 
 Route::post('password-validation', [MessageController::class, 'passwordValidation']);
 
-Route::post('message/get-message', [MessageController::class, 'getDetail']);
-
-Route::post('delete-message', [MessageController::class, 'delete']);
-
 Route::prefix('register')->group(function () {
-    Route::get('', [UserController::class, 'index']);
-
-    Route::post('confirm', [UserController::class, 'confirm']);
-
-    Route::post('', [UserController::class, 'register']);
+    Route::get('', [UserController::class, 'index'])->name('register-form');
+    Route::post('confirm', [UserController::class, 'confirm'])->name('confirm');
+    Route::post('', [UserController::class, 'register'])->name('register');
 });
 
-// Route::prefix('login')->group(function () {
-Route::get('login', [UserController::class, 'login']);
-Route::post('login', [UserController::class, 'authenticate']);
-// });
+// Auth::routes();
+// Auth::routes(['verify' => true]);
 
-Route::post('logout', [UserController::class, 'logout']);
+Route::get('login', [UserController::class, 'login']);
+Route::post('login', [UserController::class, 'authenticate'])->middleware(['auth', 'verified']);
+
+Route::post('logout', [UserController::class, 'logout'])->middleware(['auth', 'verified']);

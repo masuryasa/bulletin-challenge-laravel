@@ -31,7 +31,7 @@
                             @else
                                 <li><a href="{{ url('login') }}">Login</a></li>
                             @endauth
-                            <li><a href="{{ url('register') }}">Register</a></li>
+                            <li><a href="{{ route('register-form') }}">Register</a></li>
                         </ul>
                     </div><!-- /.navbar-collapse -->
                 </div><!-- /.container-fluid -->
@@ -58,6 +58,15 @@
         <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
             aria-hidden="true">
             <div class="modal-dialog">
+                <div class="alert alert-dismissible" id="updateAlert" role="alert" style="display: none">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
+                    {{-- <p id="alertMessage"><b></b> Fill the form input correctly!</p> --}}
+                    <p>
+                        <b id="alertStatus"></b>
+                        <span id="alertMessage"></span>
+                    </p>
+                </div>
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal"><span
@@ -65,7 +74,6 @@
                         <h4 class="modal-title" id="myModalLabel">Edit Item</h4>
                     </div>
                     <form enctype="multipart/form-data" id="formEdit">
-                        {{-- action="{{ url('edit-message') }}" method="POST" --}}
                         @csrf
                         <div class="modal-body">
                             <input type="hidden" name="idEdit" id="idEdit">
@@ -147,7 +155,7 @@
             aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <form action="{{ url('delete-message') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('delete') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <input type="hidden" name="id" id="idDelete">
                         <div class="modal-header">

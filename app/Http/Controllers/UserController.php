@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class UserController extends Controller
 {
@@ -30,12 +30,9 @@ class UserController extends Controller
 
     public function register(Request $request)
     {
-        $name = $request->input('name');
-        $email = $request->input('email');
-        $password = $request->input('password');
-        $user = ['name' => $name, 'email' => $email, 'password' => $password];
+        $user = ['name' => $request->name, 'email' => $request->email, 'password' => $request->password];
 
-        DB::table('users')->insertGetId($user);
+        User::insertGetId($user);
 
         return view('register-success');
     }

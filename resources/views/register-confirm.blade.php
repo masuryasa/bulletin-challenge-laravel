@@ -9,7 +9,7 @@
         <div class="login-box-head">
             <h1>Register</h1>
         </div>
-        <form action="{{ url('register') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('register') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="login-box-body">
                 <table class="table table-no-border">

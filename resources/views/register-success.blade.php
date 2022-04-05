@@ -16,7 +16,7 @@
         </div>
         <div class="login-box-footer">
             <div class="text-center">
-                <a href="{{ url('') }}" class="btn btn-primary">Back to Home</a>
+                <a href="{{ route('index') }}" class="btn btn-primary">Back to Home</a>
             </div>
         </div>
     </div>

@@ -43,9 +43,8 @@
             </div>
             <div class="login-box-footer">
                 <div class="text-right">
-                    <a href="{{ url('') }}" class="btn btn-default">Back</a>
-                    <button type="submit" formaction="{{ url('register/confirm') }}"
-                        class="btn btn-primary">Confirm</button>
+                    <a href="{{ route('index') }}" class="btn btn-default">Back</a>
+                    <button type="submit" formaction="{{ route('confirm') }}" class="btn btn-primary">Confirm</button>
                 </div>
             </div>
         </form>

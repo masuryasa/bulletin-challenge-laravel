@@ -23,13 +23,17 @@ $(document).ready(function() {
         }
     });
 
-    $('.editMessage').on('click', function(){
-        // bermasalah pada bagian update, pembacaan input password tidak sesuai sehingga ID dan password selalu tidak match
+    $('.edit-message').on('click', function(){
+        // ALERT!!! password salah tetap dibaca true
+        // Tombol EDIT tidak berfungsi saat auth/login karena password tidak ditentukan
+        $('#formEdit')[0].reset();
         const id = $(this).data('id');
-        const password = $('#inputPassword2').val();
-        // console.log("password: ",password);
-        // console.log("id: ",id);
-        // $('.formPassword').map(i => console.log($('.formPassword')[i]));
+        let password = $('#inputPassword'+id).val();
+
+        password = (password === "") ? null : ((isNaN(password) || (password.length < 4)) ? null : password);
+
+        const modal = $('.modal');
+        password === null ? modal.removeAttr('id') : modal.attr('id','editModal');
 
         $.ajax({
             url: 'password-validation',
@@ -39,41 +43,18 @@ $(document).ready(function() {
             },
             method: 'post',
             success: (response) => {
-                if (response.length > 0) {
-                    // console.log("resp if: ", response);
-                    $('#idEdit').val(response[0].id);
-                    $('#nameEdit').val(response[0].name);
-                    $('#titleEdit').val(response[0].title);
-                    $('#bodyEdit').val(response[0].body);
-                    $('#imageDisplay').attr('src',response[0].image_path ? 'storage/images/'+(response[0].image_path).split('/')[2] : null);
-                    $('#imageNameEdit').val(response[0].image_name ? response[0].image_name : null);
-                } else {
-                    console.log("resp else: ", response);
-                    $('.modal').modal('hide');
-                }
-
-                // $.ajax({
-                //     url: 'message/get-message',
-                //     data: {id:id},
-                //     method: 'post',
-                //     success: function(data){
-                //         $('#idEdit').val(data.id);
-                //         $('#nameEdit').val(data.name);
-                //         $('#titleEdit').val(data.title);
-                //         $('#bodyEdit').val(data.body);
-                //         $('#imageDisplay').attr('src',data.image_path ? 'storage/images/'+(data.image_path).split('/')[2] : null);
-                //         $('#imageNameEdit').val(data.image_name ? data.image_name : null);
-                //         $('#passwordEdit').val(data.pass);
-                //     }
-                // });
+                // console.log(response);
+                $('#idEdit').val(response[0].id);
+                $('#nameEdit').val(response[0].name);
+                $('#titleEdit').val(response[0].title);
+                $('#bodyEdit').val(response[0].body);
+                $('#imageDisplay').attr('src',response[0].image_path ? 'storage/images/'+(response[0].image_path).split('/')[2] : null);
+                $('#imageNameEdit').val(response[0].image_name ? response[0].image_name : null);
             },
             error: (response) => {
-                // $('.modal').modal('hide');
-                console.log("response: ",response);
+                console.log("err: ",response);
             }
         });
-
-        // $('.formPassword').map(i => $('.formPassword')[i].reset());
     });
 
     $('#formEdit').submit(function(e){
@@ -82,30 +63,36 @@ $(document).ready(function() {
 
         $.ajax({
            method:'post',
-           url: 'edit-message',
+           url: 'message/update',
            data: formData,
            contentType: false,
            processData: false,
+           cache: false,
            success: (response) => {
-               response ? location.reload() : null;
+                $('#alertStatus').text('Success to updated message!');
+                $('#updateAlert').addClass('alert-success');
+                $('#updateAlert').css('display','block');
+                setTimeout(()=>location.reload(),2000);
             },
             error: (response) => {
-                // console.log("err: ",response);
-                alert("Fill the form input correctly!");
+                $('#alertStatus').text('Failed to update message.');
+                $('#alertMessage').text('Fill the form input correctly!');
+                $('#updateAlert').addClass('alert-danger');
+                $('#updateAlert').css('display','block');
+                $('#updateAlert').fadeTo(3000, 500).fadeOut();
             }
         });
     });
 
-    $('.deleteMessage').on('click', function(){
+    $('.delete-message').on('click', function(){
         const id = $(this).data('id');
 
         $.ajax({
-            url: 'message/get-message',
+            url: 'message/get',
             data: {id:id},
             method: 'post',
             success: function(data){
                 $('#idDelete').val(data.id);
-                console.log(data.id);
             }
         });
     });
