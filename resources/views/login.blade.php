@@ -22,7 +22,7 @@
             <h1 class="mb-5">Login</h1>
             <p class="text-lgray">Please login to continue...</p>
         </div>
-        <form action="{{ url('login') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('login.action') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="login-box-body">
                 <div class="form-group">

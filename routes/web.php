@@ -1,9 +1,13 @@
 <?php
 
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\UserController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,12 +35,33 @@ Route::prefix('register')->group(function () {
     Route::get('', [UserController::class, 'index'])->name('register-form');
     Route::post('confirm', [UserController::class, 'confirm'])->name('confirm');
     Route::post('', [UserController::class, 'register'])->name('register');
+
+    Route::get('/email/verify', [UserController::class, 'registerNotification'])->name('verification.notice');
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+
+        return redirect()->route('index');
+    })->middleware(['auth', 'signed'])->name('verification.verify');
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+
+        return back()->with('message', 'Verification link sent!');
+    })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 });
 
-// Auth::routes();
-// Auth::routes(['verify' => true]);
+Route::get('login', [UserController::class, 'login'])->name('login');
+Route::post('login', [UserController::class, 'authenticate'])->name('login.action');
 
-Route::get('login', [UserController::class, 'login']);
-Route::post('login', [UserController::class, 'authenticate'])->middleware(['auth', 'verified']);
+Route::get('logout', [UserController::class, 'logout'])->middleware('auth')->name('logout');
 
-Route::post('logout', [UserController::class, 'logout'])->middleware(['auth', 'verified']);
+Route::group(
+    [
+        'middleware' => ['auth', 'verified', 'admin'],
+        'prefix' => 'admin'
+    ],
+    function () {
+        Route::get('', [AdminController::class, 'index'])->name('admin.index');
+        Route::post('delete', [AdminController::class, 'delete'])->name('admin.delete');
+        Route::post('recover', [AdminController::class, 'recover'])->name('admin.recover');
+    }
+);

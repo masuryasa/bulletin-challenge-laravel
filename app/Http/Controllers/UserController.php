@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Auth\Events\Registered;
 use App\Models\User;
+use Illuminate\Support\Facades\Session;
 
 class UserController extends Controller
 {
@@ -30,10 +32,19 @@ class UserController extends Controller
 
     public function register(Request $request)
     {
-        $user = ['name' => $request->name, 'email' => $request->email, 'password' => $request->password];
+        $userData = ['name' => $request->name, 'email' => $request->email, 'password' => $request->password];
 
-        User::insertGetId($user);
+        $user = User::create($userData);
 
+        event(new Registered($user));
+
+        auth()->login($user);
+
+        return $request->user()->hasVerifiedEmail() ? redirect($this->redirectPath()) : redirect()->route('verification.notice');
+    }
+
+    public function registerNotification()
+    {
         return view('register-success');
     }
 
@@ -52,19 +63,20 @@ class UserController extends Controller
         if (Auth::attempt($credentials, $remember = true)) {
             $request->session()->regenerate();
 
+            if (auth()->user()->email == "admin@gmail.com") {
+                return redirect()->route('admin.index');
+            }
+
             return redirect('')->with('loginStatus', ', you are logged in now.');
         }
-
         return back()->with('loginStatus', 'Login Failed! Please try again.');
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
+        Session::flush();
+
         Auth::logout();
-
-        $request->session()->invalidate();
-
-        $request->session()->regenerateToken();
 
         return redirect('');
     }

@@ -8,6 +8,17 @@
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
                             aria-hidden="true">&times;</span></button>
                     <b>{{ auth()->user()->name }}</b>{{ session('loginStatus') }}
+                    @if (is_null(auth()->user()->email_verified_at))
+                        <div id="sentMessage">
+                            <form action="{{ route('verification.send') }}" method="POST" class="d-inline">
+                                @csrf
+                                Please click this
+                                <button type="submit" class="d-inline btn btn-link p-0" id="resend-verification">
+                                    link
+                                </button> to verificate your email first to see messages data!.
+                            </form>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -21,7 +32,6 @@
             <form action="{{ route('store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @auth
-                    {{-- {{ auth()->user()->id }} --}}
                     <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
                 @endauth
                 <div class="form-group">
@@ -73,8 +83,8 @@
                     </div>
                 @enderror
             </div>
-            @auth
-            @else
+
+            @guest
                 <div class="form-group">
                     <label>Password</label>
                     <input type="password" name="password" class="form-control @error('password') is-invalid @enderror">
@@ -84,7 +94,9 @@
                         </div>
                     @enderror
                 </div>
-            @endauth
+            @endguest
+
+
             <div class="text-center mt-30 mb-30">
                 <button type="submit" class="btn btn-primary">Submit</button>
             </div>
@@ -92,85 +104,110 @@
         <hr>
         @if (!is_null($messages))
             @foreach ($messages as $message)
-                <div class="post">
-                    <div class="clearfix">
-                        <div class="pull-left">
-                            <h2 class="mb-5 text-green wrap-text"><b>{{ $message->title }}</b></h2>
+                @php
+                    [$date, $time] = explode(' ', $message->created_at);
+                @endphp
+
+                @guest
+                    <div class="post">
+                        <div class="clearfix">
+                            <div class="pull-left">
+                                <h2 class="mb-5 text-green wrap-text"><b>{{ $message->title }}</b></h2>
+                            </div>
+                            <div class="pull-right text-right">
+                                <p class="text-lgray">{{ $date }}<br /><span
+                                        class="small">{{ $time }}</span>
+                                </p>
+                            </div>
                         </div>
-                        <div class="pull-right text-right">
-                            <p class="text-lgray">{{ $message->date }}<br /><span
-                                    class="small">{{ $message->time }}</span>
-                            </p>
-                        </div>
-                    </div>
-                    <h4 class="mb-20">{{ $message->name }} <span class="text-id">
-                            @auth
+                        <h4 class="mb-20">{{ $message->name }} <span class="text-id">
                                 {{ $message->user_id ?: '-' }}
-                            @endauth
-                        </span></h4>
-                    <p class="wrap-text">{{ $message->body }}</p>
+                            </span>
+                        </h4>
+                        <p class="wrap-text">{{ $message->body }}</p>
 
-                    @if (isset($message->image_path))
-                        <img class="img-responsive img-post my-15"
-                            src="{{ asset('storage/images/' . explode('/', $message->image_path)[2]) }}"
-                            alt="image-message" />
-                    @endif
+                        @if (isset($message->image_path))
+                            <img class="img-responsive img-post my-15"
+                                src="{{ asset('storage/images/' . explode('/', $message->image_path)[2]) }}"
+                                alt="image-message" />
+                        @endif
 
-                    @if (isset($message->password))
-                        <form class="form-inline mt-50">
-                            <div class="form-group mx-sm-3 mb-2">
-                                <label for="inputPassword{{ $message->id }}" class="sr-only">Password</label>
-                                <input type="password" class="form-control" id="inputPassword{{ $message->id }}"
-                                placeholder="Password" @auth style="display: none" @else
-                                @if ($message->user_id) style="display: none" @endif @endauth>
-                        </div>
-                        <a type="submit" class="btn btn-default mb-2 edit-message" data-toggle="modal"
-                            data-target="#editModal" data-id="{{ $message->id }}" @auth
-                            @if (Hash::check(auth()->user()->id, $message->user_id)) @else style="display:none" disabled @endif @else
-                            @if ($message->user_id) style="display:none" disabled @endif @endauth><i
-                                class="fa fa-pencil p-3"></i></a>
-                        <a type="submit" class="btn btn-danger mb-2 delete-message" data-toggle="modal"
-                            data-target="#deleteModal" data-id="{{ $message->id }}" @auth
-                            @if (Hash::check(auth()->user()->id, $message->user_id)) @else style="display:none" disabled @endif @else
-                            @if ($message->user_id) style="display:none" disabled @endif @endauth><i
-                                class="fa fa-trash p-3"></i></a>
-                    </form>
-                @endif
+                        @if (isset($message->password) && !$message->user_id)
+                            <form class="form-inline mt-50" id="formPassword">
+                                <div class="form-group mx-sm-3 mb-2">
+                                    <label for="inputPassword{{ $message->id }}" class="sr-only">Password</label>
+                                    <input type="password" class="form-control" id="inputPassword{{ $message->id }}"
+                                        placeholder="Password">
+                                </div>
+                                <a type="submit" class="btn btn-default mb-2 edit-message" data-toggle="modal"
+                                    data-target="#editModal" data-id="{{ $message->id }}"><i
+                                        class="fa fa-pencil p-3"></i></a>
+                                <a type="submit" class="btn btn-danger mb-2 delete-message" data-toggle="modal"
+                                    data-target="#deleteModal" data-id="{{ $message->id }}"><i
+                                        class="fa fa-trash p-3"></i></a>
+                            </form>
+                        @endif
+                    </div>
+                @endguest
 
                 @auth
-                    <script>
-                        {{ 'var auth = true;' }}
-                    </script>
-                    @if (auth()->user()->id === $message->user_id && isset($message->password))
-                        <form class="form-inline mt-50">
-                            <a type="submit" class="btn btn-default mb-2 edit-message" data-toggle="modal"
-                                data-target="#editModal" data-id="{{ $message->id }}"><i
-                                    class="fa fa-pencil p-3"></i></a>
-                            <a type="submit" class="btn btn-danger mb-2 delete-message" data-toggle="modal"
-                                data-target="#deleteModal" data-id="{{ $message->id }}"><i
-                                    class="fa fa-trash p-3"></i></a>
-                        </form>
-                    @endauth
-                @endif
-            </div>
-        @endforeach
-    @endif
+                    @if (!is_null(auth()->user()->email_verified_at))
+                        <div class="post">
+                            <div class="clearfix">
+                                <div class="pull-left">
+                                    <h2 class="mb-5 text-green wrap-text"><b>{{ $message->title }}</b></h2>
+                                </div>
+                                <div class="pull-right text-right">
+                                    <p class="text-lgray">{{ $date }}<br /><span
+                                            class="small">{{ $time }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <h4 class="mb-20">{{ $message->name }} <span class="text-id">
+                                    {{ $message->user_id ?: '-' }}
+                                </span>
+                            </h4>
+                            <p class="wrap-text">{{ $message->body }}</p>
 
-    <div class="text-center mt-30">
-        <nav>
-            <ul class="pagination">
-                <li><a href="#">&laquo;</a></li>
-                <li><a href="#">&lsaquo;</a></li>
-                <li class="active"><a href="#">1</a></li>
-                <li><a href="#">2</a></li>
-                <li><a href="#">3</a></li>
-                <li><a href="#">4</a></li>
-                <li><a href="#">5</a></li>
-                <li><a href="#">&rsaquo;</a></li>
-                <li><a href="#">&raquo;</a></li>
-            </ul>
-        </nav>
+                            @if (isset($message->image_path))
+                                <img class="img-responsive img-post my-15"
+                                    src="{{ asset('storage/images/' . explode('/', $message->image_path)[2]) }}"
+                                    alt="image-message" />
+                            @endif
+
+                            @if (auth()->user()->id === $message->user_id)
+                                <form class="form-inline mt-50">
+                                    <a type="submit" class="btn btn-default mb-2 edit-message" data-toggle="modal"
+                                        data-target="#editModal" data-id="{{ $message->id }}"
+                                        data-user-id="{{ auth()->user()->id }}"><i class="fa fa-pencil p-3"></i></a>
+                                    <a type="submit" class="btn btn-danger mb-2 delete-message" data-toggle="modal"
+                                        data-target="#deleteModal" data-id="{{ $message->id }}"
+                                        data-user-id="{{ auth()->user()->id }}"><i class="fa fa-trash p-3"></i></a>
+                                </form>
+                            @endif
+                        </div>
+                    @endif
+                @endauth
+            @endforeach
+        @endif
+
+        <div class="text-center mt-30">
+            {{-- <nav>
+                <ul class="pagination">
+                    <li><a href="#">&laquo;</a></li>
+                    <li><a href="#">&lsaquo;</a></li>
+                    <li class="active"><a href="#">1</a></li>
+                    <li><a href="#">2</a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#">4</a></li>
+                    <li><a href="#">5</a></li>
+                    <li><a href="#">&rsaquo;</a></li>
+                    <li><a href="#">&raquo;</a></li>
+                </ul>
+            </nav> --}}
+            {{-- onEachSide(10) does not work --}}
+            {{ $messages->onEachSide(10)->links() }}
+        </div>
     </div>
-</div>
 </div>
 @endsection

@@ -22,16 +22,13 @@
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                         <ul class="nav navbar-nav navbar-right">
                             @auth
-                                <li>
-                                    <form action="{{ url('logout') }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="logout">Logout</button>
-                                    </form>
-                                </li>
-                            @else
-                                <li><a href="{{ url('login') }}">Login</a></li>
+                                <li><a href="{{ route('logout') }}">Logout</a></li>
                             @endauth
-                            <li><a href="{{ route('register-form') }}">Register</a></li>
+
+                            @guest
+                                <li><a href="{{ route('login') }}">Login</a></li>
+                                <li><a href="{{ route('register-form') }}">Register</a></li>
+                            @endguest
                         </ul>
                     </div><!-- /.navbar-collapse -->
                 </div><!-- /.container-fluid -->
@@ -55,8 +52,7 @@
         </footer>
 
         {{-- Edit Modal --}}
-        <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-            aria-hidden="true">
+        <div class="modal modal-edit fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="alert alert-dismissible" id="updateAlert" role="alert" style="display: none">
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -77,6 +73,7 @@
                         @csrf
                         <div class="modal-body">
                             <input type="hidden" name="idEdit" id="idEdit">
+                            <input type="hidden" name="oldImagePath" id="oldImagePath">
                             <div class="form-group">
                                 <label>Name</label>
                                 <input type="text" class="form-control @error('nameEdit') is-invalid @enderror"
@@ -109,7 +106,7 @@
                             </div>
                             <div class="form-group row">
                                 <div class="col-md-4">
-                                    <img class="img-responsive" alt="" id="imageDisplay">
+                                    <img class="img-responsive" alt="uploaded-image-display" id="imageDisplay">
                                 </div>
                                 <div class="col-md-8 pl-0">
                                     <label>Choose image from your computer :</label>
@@ -118,14 +115,14 @@
                                         <span class="input-group-btn">
                                             <span class="btn btn-default btn-file">
                                                 <i class="fa fa-folder-open"></i>&nbsp;Browse <input type="file"
-                                                    id="imageEdit" name="imageEdit" multiple>
+                                                    id="imageEdit" name="imageEdit" onchange="previewImage()" multiple>
                                                 <span class="text-danger" id="image-input-error"></span>
                                             </span>
                                         </span>
                                     </div>
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" id="deleteImage">Delete image
+                                            <input type="checkbox" id="deleteImage" name="deleteImage"> Delete image
                                         </label>
                                     </div>
                                 </div>
@@ -151,13 +148,13 @@
         </div>
 
         {{-- Delete Modal --}}
-        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-            aria-hidden="true">
+        <div class="modal modal-delete fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <form action="{{ route('delete') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <input type="hidden" name="id" id="idDelete">
+                        <input type="hidden" name="image" id="oldImagePathDelete">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal"><span
                                     aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
