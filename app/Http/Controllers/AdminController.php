@@ -10,7 +10,9 @@ class AdminController extends Controller
 {
     public function index()
     {
-        $messages = Message::withTrashed()->latest('id')->with('user')->paginate(6);
+        $messages = Message::withTrashed()->latest('id')->with('user')
+            ->title()->body()->image()->status()
+            ->paginate(20)->withQueryString();
 
         return view('admin.index', ['messages' => $messages]);
     }

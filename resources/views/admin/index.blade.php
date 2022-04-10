@@ -90,14 +90,15 @@ $page = 'home';
                                 <form method="" action="">
                                     <div class="box-body">
                                         <div class="bordered-box mb-20">
-                                            <form class="form" role="form">
+                                            <form class="form" role="form" action="search">
                                                 <table class="table table-no-border mb-0">
                                                     <tbody>
                                                         <tr>
                                                             <td width="80"><b>Title</b></td>
                                                             <td>
                                                                 <div class="form-group mb-0">
-                                                                    <input type="text" class="form-control">
+                                                                    <input type="text" class="form-control" name="title"
+                                                                        value="{{ request('title') }}">
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -105,7 +106,8 @@ $page = 'home';
                                                             <td><b>Body</b></td>
                                                             <td>
                                                                 <div class="form-group mb-0">
-                                                                    <input type="text" class="form-control">
+                                                                    <input type="text" class="form-control" name="body"
+                                                                        value="{{ request('body') }}">
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -118,19 +120,24 @@ $page = 'home';
                                                             <td width="60">
                                                                 <label class="radio-inline">
                                                                     <input type="radio" name="imageOption" id="inlineRadio1"
-                                                                        value="option1"> with
+                                                                        value="with"
+                                                                        @if (request('imageOption') == 'with') checked @endif>
+                                                                    with
                                                                 </label>
                                                             </td>
                                                             <td width="80">
                                                                 <label class="radio-inline">
                                                                     <input type="radio" name="imageOption" id="inlineRadio2"
-                                                                        value="option2"> without
+                                                                        value="without"
+                                                                        @if (request('imageOption') == 'without') checked @endif>
+                                                                    without
                                                                 </label>
                                                             </td>
                                                             <td>
                                                                 <label class="radio-inline">
                                                                     <input type="radio" name="imageOption" id="inlineRadio3"
-                                                                        value="option3" checked>
+                                                                        value="unspecified"
+                                                                        @if (request('imageOption') == 'unspecified') checked @endif>
                                                                     unspecified
                                                                 </label>
                                                             </td>
@@ -140,26 +147,31 @@ $page = 'home';
                                                             <td>
                                                                 <label class="radio-inline">
                                                                     <input type="radio" name="statusOption"
-                                                                        id="inlineRadio1" value="option1"> on
+                                                                        id="inlineRadio1" value="on"
+                                                                        @if (request('statusOption') == 'on') checked @endif> on
                                                                 </label>
                                                             </td>
                                                             <td>
                                                                 <label class="radio-inline">
                                                                     <input type="radio" name="statusOption"
-                                                                        id="inlineRadio2" value="option2"> delete
+                                                                        id="inlineRadio2" value="deleted"
+                                                                        @if (request('statusOption') == 'deleted') checked @endif>
+                                                                    delete
                                                                 </label>
                                                             </td>
                                                             <td>
                                                                 <label class="radio-inline">
                                                                     <input type="radio" name="statusOption"
-                                                                        id="inlineRadio3" value="option3" checked>
+                                                                        id="inlineRadio3" value="unspecified"
+                                                                        @if (request('statusOption') == 'unspecified') checked @endif>
                                                                     unspecified
                                                                 </label>
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <td><a href="#" class="btn btn-default mt-10"><i
-                                                                        class="fa fa-search"></i> Search</a></td>
+                                                            <td><button type="submit" class="btn btn-default mt-10"><i
+                                                                        class="fa fa-search"></i>
+                                                                    Search</button></td>
                                                         </tr>
                                                     </tbody>
                                                 </table>

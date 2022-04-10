@@ -50,6 +50,6 @@ $(document).ready(function() {
             success: (response)=>{
                 location.reload();
             }
-        })
-     })
+        });
+     });
 });
