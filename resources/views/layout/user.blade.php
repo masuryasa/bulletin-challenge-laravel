@@ -57,7 +57,6 @@
                 <div class="alert alert-dismissible" id="updateAlert" role="alert" style="display: none">
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span></button>
-                    {{-- <p id="alertMessage"><b></b> Fill the form input correctly!</p> --}}
                     <p>
                         <b id="alertStatus"></b>
                         <span id="alertMessage"></span>
@@ -127,16 +126,18 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label>Password</label>
-                                <input type="password" class="form-control @error('password') is-invalid @enderror"
-                                    id="passwordEdit" name="passwordEdit">
-                                @error('password')
-                                    <div class="invalid-input">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
+                            @guest
+                                <div class="form-group">
+                                    <label>Password</label>
+                                    <input type="password" class="form-control @error('password') is-invalid @enderror"
+                                        id="passwordEdit" name="passwordEdit">
+                                    @error('password')
+                                        <div class="invalid-input">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
+                            @endguest
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -153,7 +154,8 @@
                 <div class="modal-content">
                     <form action="{{ route('delete') }}" method="POST" enctype="multipart/form-data">
                         @csrf
-                        <input type="hidden" name="id" id="idDelete">
+                        <input type="hidden" name="idDelete" id="idDelete">
+                        <input type="hidden" name="passwordDelete" id="passwordDelete">
                         <input type="hidden" name="image" id="oldImagePathDelete">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal"><span

@@ -207,11 +207,11 @@ $page = 'home';
                                                         </td>
                                                         <td>{{ $message->id }}</td>
                                                         <td>{{ $message->title }}</td>
-                                                        <td>{{ $message->body }}</td>
+                                                        <td>{!! $message->body !!}</td>
                                                         <td>
-                                                            @if (!$message->trashed() && !is_null($message->image_path))
+                                                            @if (!$message->trashed() && isset($message->image_name))
                                                                 <img class="img-prev"
-                                                                    src="{{ asset('storage/images/' . explode('/', $message->image_path)[2]) }}"
+                                                                    src="{{ asset('storage/images/' . $message->image_name) }}"
                                                                     style="max-width: 100px">
                                                                 <a href="#" data-toggle="modal" data-target="#deleteModal"
                                                                     data-id="{{ $message->id }}" data-button="image"

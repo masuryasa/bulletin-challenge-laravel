@@ -24,6 +24,25 @@
         </div>
     @endif
 
+    <div class="row" id="rowAlert2" style="display: none">
+        <div class="col-md-6 col-md-offset-3 p-30">
+            <div class="alert alert-success alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <b>Verify your email!</b> To be able to post a message.
+                <div id="sentMessage">
+                    <form action="{{ route('verification.send') }}" method="POST" class="d-inline">
+                        @csrf
+                        Please click this
+                        <button type="submit" class="d-inline btn btn-link p-0" id="resend-verification">
+                            link
+                        </button> to verificate your email!.
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-md-6 col-md-offset-3 bg-white p-30 box">
             <div class="text-center">
@@ -39,7 +58,6 @@
                     <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
                         value="@auth{{ auth()->user()->name }}@else{{ old('name') }}@endauth" required @auth readonly
                     @else autofocus @endauth>
-                {{-- <p class="small text-danger mt-5">*Your name must be 3 to 16 characters long</p> --}}
                 @error('name')
                     <div class="invalid-input">
                         {{ $message }}
@@ -49,7 +67,8 @@
             <div class="form-group">
                 <label>Title</label>
                 <input type="text" name="title" class="form-control @error('title') is-invalid @enderror"
-                    value="{{ old('title') }}" required @auth autofocus @endauth>
+                    value="{{ old('title') }}" required @auth autofocus
+                    @if (is_null(auth()->user()->email_verified_at)) readonly @endif @endauth>
                 @error('title')
                     <div class="invalid-input">
                         {{ $message }}
@@ -58,8 +77,8 @@
             </div>
             <div class="form-group">
                 <label>Body</label>
-                <textarea rows="5" name="body" class="form-control @error('body') is-invalid @enderror"
-                    required>{{ old('body') }}</textarea>
+                <textarea rows="5" name="body" class="form-control @error('body') is-invalid @enderror" required @auth
+                    @if (is_null(auth()->user()->email_verified_at)) readonly @endif @endauth>{{ old('body') }}</textarea>
                 @error('body')
                     <div class="invalid-input">
                         {{ $message }}
@@ -73,7 +92,8 @@
                         value="No file chosen" readonly>
                     <span class="input-group-btn">
                         <span class="btn btn-default btn-file">
-                            <i class="fa fa-folder-open"></i>&nbsp;Browse <input type="file" name="image" multiple>
+                            <i class="fa fa-folder-open"></i>&nbsp;Browse <input type="file" name="image" multiple @auth
+                                @if (is_null(auth()->user()->email_verified_at)) disabled @endif @endauth>
                         </span>
                     </span>
                 </div>
@@ -96,13 +116,19 @@
                 </div>
             @endguest
 
+            @auth
+                <div class="text-center mt-30 mb-30">
+                    @if (isset(auth()->user()->email_verified_at))
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    @else
+                        <div id="unverified_submit" class="btn btn-primary" disabled>Submit</div>
+                    @endif
+                </div>
+            @endauth
 
-            <div class="text-center mt-30 mb-30">
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </div>
         </form>
         <hr>
-        @if (!is_null($messages))
+        @if (isset($messages))
             @foreach ($messages as $message)
                 @php
                     [$date, $time] = explode(' ', $message->created_at);
@@ -124,12 +150,11 @@
                                 {{ $message->user_id ?: '-' }}
                             </span>
                         </h4>
-                        <p class="wrap-text">{{ $message->body }}</p>
+                        <p class="wrap-text">{!! $message->body !!}</p>
 
-                        @if (isset($message->image_path))
+                        @if (isset($message->image_name))
                             <img class="img-responsive img-post my-15"
-                                src="{{ asset('storage/images/' . explode('/', $message->image_path)[2]) }}"
-                                alt="image-message" />
+                                src="{{ asset('storage/images/' . $message->image_name) }}" alt="image-message" />
                         @endif
 
                         @if (isset($message->password) && !$message->user_id)
@@ -146,12 +171,13 @@
                                     data-target="#deleteModal" data-id="{{ $message->id }}"><i
                                         class="fa fa-trash p-3"></i></a>
                             </form>
+                            <div class="invalid-input" id="invalidPassword{{ $message->id }}"></div>
                         @endif
                     </div>
                 @endguest
 
                 @auth
-                    @if (!is_null(auth()->user()->email_verified_at))
+                    @if (isset(auth()->user()->email_verified_at))
                         <div class="post">
                             <div class="clearfix">
                                 <div class="pull-left">
@@ -169,10 +195,9 @@
                             </h4>
                             <p class="wrap-text">{{ $message->body }}</p>
 
-                            @if (isset($message->image_path))
+                            @if (isset($message->image_name))
                                 <img class="img-responsive img-post my-15"
-                                    src="{{ asset('storage/images/' . explode('/', $message->image_path)[2]) }}"
-                                    alt="image-message" />
+                                    src="{{ asset('storage/images/' . $message->image_name) }}" alt="image-message" />
                             @endif
 
                             @if (auth()->user()->id === $message->user_id)

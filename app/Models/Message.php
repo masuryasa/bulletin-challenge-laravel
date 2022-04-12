@@ -29,9 +29,9 @@ class Message extends Model
     public function scopeImage($query)
     {
         if (request('imageOption') == "with") {
-            return $query->whereNotNull('image_path');
+            return $query->whereNotNull('image_name');
         } elseif (request('imageOption') == "without") {
-            return $query->whereNull('image_path');
+            return $query->whereNull('image_name');
         }
     }
 

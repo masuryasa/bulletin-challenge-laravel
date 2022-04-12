@@ -25,14 +25,12 @@ class UserController extends Controller
             'password' => 'required|min:8|max:16'
         ]);
 
-        $validatedData['password'] = Hash::make($validatedData['password']);
-
         return view('register-confirm')->with('user', $validatedData);
     }
 
     public function register(Request $request)
     {
-        $userData = ['name' => $request->name, 'email' => $request->email, 'password' => $request->password];
+        $userData = ['name' => $request->name, 'email' => $request->email, 'password' => Hash::make($request->password)];
 
         $user = User::create($userData);
 

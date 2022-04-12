@@ -14,6 +14,10 @@ $.ajaxSetup({
 $(document).ready(function() {
     $('#rowAlert').fadeTo(7000, 500).fadeOut();
 
+    $('#unverified_submit').on('click', function(){
+        $('#rowAlert2').fadeTo(5000, 500).fadeOut();
+    });
+
     $('#resend-verification').on('click', function() {
         setTimeout(() => {
             $('#sentMessage').empty();
@@ -31,6 +35,7 @@ $(document).ready(function() {
             if (log) alert(log);
         }
     });
+
     $('.edit-message').on('click', function(){
         $('#formEdit')[0].reset();
         const id = $(this).data('id');
@@ -55,9 +60,9 @@ $(document).ready(function() {
                     $('#nameEdit').val(response.name);
                     $('#titleEdit').val(response.title);
                     $('#bodyEdit').val(response.body);
-                    $('#oldImagePath').val(response.image_path ? 'public/images/'+(response.image_path).split('/')[2] : null);
-                    $('#imageDisplay').attr('src',response.image_path ? 'storage/images/'+(response.image_path).split('/')[2] : null);
-                    $('#imageNameEdit').val(response.image_name ? response.image_name : null);
+                    $('#oldImagePath').val(response.image_name ? 'public/images/'+response.image_name : null);
+                    $('#imageDisplay').attr('src',response.image_name ? 'storage/images/'+response.image_name : 'http://via.placeholder.com/500x500');
+                    $('#imageNameEdit').val(response.image_name ? (response.image_name).split('+')[1] : null);
                 }
             });
         } else {
@@ -84,11 +89,13 @@ $(document).ready(function() {
                                 $('#nameEdit').val(response.name);
                                 $('#titleEdit').val(response.title);
                                 $('#bodyEdit').val(response.body);
-                                $('#oldImagePath').val(response.image_path ? 'public/images/'+(response.image_path).split('/')[2] : null);
-                                $('#imageDisplay').attr('src',response.image_path ? 'storage/images/'+(response.image_path).split('/')[2] : null);
-                                $('#imageNameEdit').val(response.image_name ? response.image_name : null);
+                                $('#oldImagePath').val(response.image_name ? 'public/images/'+response.image_name : null);
+                                $('#imageDisplay').attr('src',response.image_name ? 'storage/images/'+response.image_name : 'http://via.placeholder.com/500x500');
+                                $('#imageNameEdit').val(response.image_name ? (response.image_name).split('+')[1] : null);
                             }
                         });
+                    } else {
+                        $('#invalidPassword'+id).text("You entered wrong password!");
                     }
                 },
             });
@@ -96,12 +103,14 @@ $(document).ready(function() {
 
         $('#inputPassword'+id).val('');
         modalEdit.removeAttr('id');
+        $('#invalidPassword'+id).text('');
     });
 
     $('#formEdit').submit(function(e){
         e.preventDefault();
         let formData = new FormData(this);
         const updateAlert = $('#updateAlert');
+        updateAlert.removeClass('alert-danger');
 
         $.ajax({
            method:'post',
@@ -111,10 +120,19 @@ $(document).ready(function() {
            processData: false,
            cache: false,
            success: (response) => {
-               $('#alertStatus').text('Success to updated message!');
-               updateAlert.addClass('alert-success');
-               updateAlert.css('display','block');
-               setTimeout(()=>location.reload(),2000);
+               if (response) {
+                $('#alertStatus').text('Success to updated message!');
+                updateAlert.addClass('alert-success');
+                updateAlert.css('display','block');
+                setTimeout(()=>location.reload(),2000);
+               } else {
+                $('#alertStatus').text('Failed to update message.');
+                $('#alertMessage').text('Fill the form input correctly!');
+                updateAlert.addClass('alert-danger');
+                updateAlert.css('display','block');
+                updateAlert.fadeTo(3000, 500).fadeOut();
+               }
+
             },
             error: (response) => {
                 $('#alertStatus').text('Failed to update message.');
@@ -144,7 +162,7 @@ $(document).ready(function() {
                 method: 'post',
                 success: (response) => {
                     $('#idDelete').val(response.id);
-                    $('#oldImagePathDelete').val('public/images/'+(response.image_path).split('/')[2]);
+                    $('#oldImagePathDelete').val('public/images/'+response.image_name);
                 }
             });
         } else {
@@ -166,9 +184,12 @@ $(document).ready(function() {
                             method: 'post',
                             success: (response) => {
                                 $('#idDelete').val(response.id);
-                                $('#oldImagePathDelete').val('public/images/'+(response.image_path).split('/')[2]);
+                                $('#passwordDelete').val(password);
+                                $('#oldImagePathDelete').val('public/images/'+response.image_name);
                             }
                         });
+                    } else {
+                        $('#invalidPassword'+id).text("You entered wrong password!");
                     }
                 }
             });
@@ -176,6 +197,7 @@ $(document).ready(function() {
 
         $('#inputPassword'+id).val('');
         modalDelete.removeAttr('id');
+        $('#invalidPassword'+id).text('');
     });
 });
 

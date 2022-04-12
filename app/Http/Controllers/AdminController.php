@@ -25,13 +25,12 @@ class AdminController extends Controller
             foreach ($ids as $id) {
                 $message = Message::find($id);
 
-                $image_path = $message->image_path;
+                $image_name = $message->image_name;
 
-                if (!is_null($image_path)) {
-                    Storage::delete($image_path);
+                if (isset($image_name)) {
+                    Storage::delete("public/images/" . $image_name);
 
                     $message->image_name = null;
-                    $message->image_path = null;
                 }
 
                 $message->save();
@@ -41,13 +40,12 @@ class AdminController extends Controller
         } else {
             $message = Message::find($request->id);
 
-            $image_path = $message->image_path;
+            $image_name = $message->image_name;
 
-            if (!is_null($image_path)) {
-                Storage::delete($image_path);
+            if (isset($image_name)) {
+                Storage::delete("public/images/" . $image_name);
 
                 $message->image_name = null;
-                $message->image_path = null;
             }
 
             $message->save();
