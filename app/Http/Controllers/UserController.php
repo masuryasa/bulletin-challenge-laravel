@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Registered;
 use App\Models\User;
-use Illuminate\Support\Facades\Session;
 
 class UserController extends Controller
 {
@@ -44,38 +42,5 @@ class UserController extends Controller
     public function registerNotification()
     {
         return view('register-success');
-    }
-
-    public function login()
-    {
-        return view('login');
-    }
-
-    public function authenticate(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => 'required|email:dns',
-            'password' => 'required|min:8|max:16'
-        ]);
-
-        if (Auth::attempt($credentials, $remember = true)) {
-            $request->session()->regenerate();
-
-            if (auth()->user()->email == "admin@gmail.com") {
-                return redirect()->route('admin.index');
-            }
-
-            return redirect('')->with('loginStatus', ', you are logged in now.');
-        }
-        return back()->with('loginStatus', 'Login Failed! Please try again.');
-    }
-
-    public function logout()
-    {
-        Session::flush();
-
-        Auth::logout();
-
-        return redirect('');
     }
 }

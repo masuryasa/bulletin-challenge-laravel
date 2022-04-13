@@ -74,7 +74,9 @@ class MessageController extends Controller
 
     public function update(Request $request)
     {
-        if ($this->passwordValidation($request, 'update')) {
+        $isMember = filter_var($request->isMember, FILTER_VALIDATE_BOOL);
+
+        if ($this->passwordValidation($request, 'update') || $isMember) {
             $request->validate([
                 'nameEdit' => 'required|min:3|max:16',
                 'titleEdit' => 'required|min:10|max:32',
@@ -119,7 +121,9 @@ class MessageController extends Controller
 
     public function delete(Request $request)
     {
-        if ($this->passwordValidation($request, 'delete')) {
+        $isMember = filter_var($request->isMember, FILTER_VALIDATE_BOOL);
+
+        if ($this->passwordValidation($request, 'delete') || $isMember) {
             Message::find($request->idDelete)->forceDelete();
             Storage::delete($request->image);
 

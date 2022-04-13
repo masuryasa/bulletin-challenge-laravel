@@ -20,22 +20,26 @@ class AdminController extends Controller
     public function delete(Request $request)
     {
         if ($request->button == "messageAll") {
-            $ids = explode(',', $request->id);
+            if (isset($request->id)) {
+                $ids = explode(',', $request->id);
 
-            foreach ($ids as $id) {
-                $message = Message::find($id);
+                foreach ($ids as $id) {
+                    $message = Message::find($id);
 
-                $image_name = $message->image_name;
+                    $image_name = $message->image_name;
 
-                if (isset($image_name)) {
-                    Storage::delete("public/images/" . $image_name);
+                    if (isset($image_name)) {
+                        Storage::delete("public/images/" . $image_name);
 
-                    $message->image_name = null;
+                        $message->image_name = null;
+                    }
+
+                    $message->save();
+
+                    $message->delete();
                 }
-
-                $message->save();
-
-                $message->delete();
+            } else {
+                return back();
             }
         } else {
             $message = Message::find($request->id);

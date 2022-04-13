@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\LoginController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -47,10 +48,10 @@ Route::prefix('register')->group(function () {
     })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 });
 
-Route::get('login', [UserController::class, 'login'])->name('login');
-Route::post('login', [UserController::class, 'authenticate'])->name('login.action');
+Route::get('login', [LoginController::class, 'login'])->name('login');
+Route::post('login', [LoginController::class, 'authenticate'])->name('login.action');
 
-Route::get('logout', [UserController::class, 'logout'])->middleware('auth')->name('logout');
+Route::get('logout', [LoginController::class, 'logout'])->middleware('auth')->name('logout');
 
 Route::group(
     [

@@ -57,6 +57,7 @@ $(document).ready(function() {
                 method: 'post',
                 success: (response) => {
                     $('#idEdit').val(response.id);
+                    $('#isMemberEdit').val('true');
                     $('#nameEdit').val(response.name);
                     $('#titleEdit').val(response.title);
                     $('#bodyEdit').val(response.body);
@@ -108,7 +109,7 @@ $(document).ready(function() {
 
     $('#formEdit').submit(function(e){
         e.preventDefault();
-        let formData = new FormData(this);
+        const formData = new FormData(this);
         const updateAlert = $('#updateAlert');
         updateAlert.removeClass('alert-danger');
 
@@ -163,6 +164,7 @@ $(document).ready(function() {
                 success: (response) => {
                     $('#idDelete').val(response.id);
                     $('#oldImagePathDelete').val('public/images/'+response.image_name);
+                    $('#isMemberDelete').val('true');
                 }
             });
         } else {

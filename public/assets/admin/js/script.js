@@ -34,10 +34,9 @@ $(document).ready(function() {
     });
 
     $('#deleteAllButton').on('click', function(){
+        $('#buttonType').val('messageAll');
         const idMessage = $('#idMessage');
         checkboxIds.length > 0 ? idMessage.val(checkboxIds.join()) : idMessage.val('');
-
-        $('#buttonType').val('messageAll');
     });
 
      $('.btn-recover').on('click', function(){
