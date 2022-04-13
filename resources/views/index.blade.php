@@ -114,6 +114,10 @@
                         </div>
                     @enderror
                 </div>
+
+                <div class="text-center mt-30 mb-30">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
             @endguest
 
             @auth
