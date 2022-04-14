@@ -19,12 +19,12 @@ class AdminController extends Controller
 
     public function delete(Request $request)
     {
-        if ($request->button == "messageAll") {
+        if ($request->button === "messageAll") {
             if (isset($request->id)) {
                 $ids = explode(',', $request->id);
 
                 foreach ($ids as $id) {
-                    $message = Message::find($id);
+                    $message    = Message::find($id);
 
                     $image_name = $message->image_name;
 
@@ -42,7 +42,7 @@ class AdminController extends Controller
                 return back();
             }
         } else {
-            $message = Message::find($request->id);
+            $message    = Message::find($request->id);
 
             $image_name = $message->image_name;
 
@@ -54,7 +54,7 @@ class AdminController extends Controller
 
             $message->save();
 
-            if ($request->button == "message") {
+            if ($request->button === "message") {
                 $message->delete();
             }
         }

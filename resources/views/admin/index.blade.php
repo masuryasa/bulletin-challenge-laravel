@@ -207,7 +207,9 @@ $page = 'home';
                                                         </td>
                                                         <td>{{ $message->id }}</td>
                                                         <td>{{ $message->title }}</td>
-                                                        <td>{!! $message->body !!}</td>
+                                                        <td>
+                                                            <pre class="body">{{ $message->body }}</pre>
+                                                        </td>
                                                         <td>
                                                             @if (!$message->trashed() && isset($message->image_name))
                                                                 <img class="img-prev"

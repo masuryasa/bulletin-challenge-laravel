@@ -28,7 +28,11 @@ class UserController extends Controller
 
     public function register(Request $request)
     {
-        $userData = ['name' => $request->name, 'email' => $request->email, 'password' => Hash::make($request->password)];
+        $userData = [
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password)
+        ];
 
         $user = User::create($userData);
 

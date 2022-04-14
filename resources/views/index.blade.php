@@ -154,7 +154,9 @@
                                 {{ $message->user_id ?: '-' }}
                             </span>
                         </h4>
-                        <p class="wrap-text">{!! $message->body !!}</p>
+                        <p class="wrap-text">
+                            <pre class="body">{{ $message->body }}</pre>
+                        </p>
 
                         @if (isset($message->image_name))
                             <img class="img-responsive img-post my-15"
@@ -221,19 +223,6 @@
         @endif
 
         <div class="text-center mt-30">
-            {{-- <nav>
-                <ul class="pagination">
-                    <li><a href="#">&laquo;</a></li>
-                    <li><a href="#">&lsaquo;</a></li>
-                    <li class="active"><a href="#">1</a></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">4</a></li>
-                    <li><a href="#">5</a></li>
-                    <li><a href="#">&rsaquo;</a></li>
-                    <li><a href="#">&raquo;</a></li>
-                </ul>
-            </nav> --}}
             {{-- onEachSide(10) does not work --}}
             {{ $messages->onEachSide(10)->links() }}
         </div>

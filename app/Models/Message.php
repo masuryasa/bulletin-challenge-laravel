@@ -28,18 +28,18 @@ class Message extends Model
 
     public function scopeImage($query)
     {
-        if (request('imageOption') == "with") {
+        if (request('imageOption') === "with") {
             return $query->whereNotNull('image_name');
-        } elseif (request('imageOption') == "without") {
+        } elseif (request('imageOption') === "without") {
             return $query->whereNull('image_name');
         }
     }
 
     public function scopeStatus($query)
     {
-        if (request('statusOption') == "on") {
+        if (request('statusOption') === "on") {
             return $query->whereNull('deleted_at');
-        } elseif (request('statusOption') == "deleted") {
+        } elseif (request('statusOption') === "deleted") {
             return $query->whereNotNull('deleted_at');
         }
     }

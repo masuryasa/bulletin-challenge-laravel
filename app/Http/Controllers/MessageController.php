@@ -29,33 +29,29 @@ class MessageController extends Controller
 
         $message = new Message;
 
-        $message->name = $request->name;
-        $message->title = $request->title;
-        $message->body = nl2br($request->body);
-        $message->password = is_null($request->password) ? null : Hash::make($request->password);
-        $image = $request->file('image');
-        $imageName = isset($image) ? $request->title . '+' . $image->getClientOriginalName() : null;
-        isset($image) ? $image->storeAs('public/images', $imageName) : null;
-        $message->image_name = isset($image) ? $imageName : null;
-        $message->user_id = $request->user_id;
+        $message->name      = $request->name;
+        $message->title     = $request->title;
+        $message->body      = $request->body;
+        $message->password  = is_null($request->password) ? null : Hash::make($request->password);
+
+        $image              = $request->file('image');
+
+        if (isset($image)) {
+            $imagePath              = $image->store('public/images');
+            $message->image_name    = explode('/', $imagePath)[2];
+        }
+
+        $message->user_id   = $request->user_id;
 
         $message->save();
 
         return back();
     }
 
-    public function passwordValidation(Request $request, $src = null)
+    public function passwordValidation(Request $request)
     {
-        if ($src == "update") {
-            $id = (int)$request->idEdit;
-            $password = $request->passwordEdit;
-        } elseif ($src == "delete") {
-            $id = (int)$request->idDelete;
-            $password = $request->passwordDelete;
-        } else {
-            $id = (int)$request->id;
-            $password = $request->password;
-        }
+        $id         = (int)$request->id;
+        $password   = $request->password;
 
         if (is_null($password)) return null;
         else (int)$password;
@@ -74,62 +70,56 @@ class MessageController extends Controller
 
     public function update(Request $request)
     {
-        $isMember = filter_var($request->isMember, FILTER_VALIDATE_BOOL);
+        if (!($this->passwordValidation($request) || filter_var($request->isMember, FILTER_VALIDATE_BOOL))) return false;
 
-        if ($this->passwordValidation($request, 'update') || $isMember) {
-            $request->validate([
-                'nameEdit' => 'required|min:3|max:16',
-                'titleEdit' => 'required|min:10|max:32',
-                'bodyEdit' => 'required|min:10|max:200',
-                'passwordEdit' => 'nullable|numeric|digits:4',
-                'imageEdit' => 'nullable|image|mimes:png,jpg,svg,jpeg,gif|max:2048',
-            ]);
+        $request->validate([
+            'nameEdit' => 'required|min:3|max:16',
+            'titleEdit' => 'required|min:10|max:32',
+            'bodyEdit' => 'required|min:10|max:200',
+            'password' => 'nullable|numeric|digits:4',
+            'imageEdit' => 'nullable|image|mimes:png,jpg,svg,jpeg,gif|max:2048',
+        ]);
 
-            $messageUpdate = Message::find($request->idEdit);
+        $messageUpdate = Message::find($request->id);
 
-            $messageUpdate->name = $request->nameEdit;
-            $messageUpdate->title = $request->titleEdit;
-            $messageUpdate->body = $request->bodyEdit;
-            $password = $request->passwordEdit;
-            !empty($password) ? $messageUpdate->password = Hash::make($password) : null;
-            $deleteImageCheck = $request->deleteImage;
+        $messageUpdate->name    = $request->nameEdit;
+        $messageUpdate->title   = $request->titleEdit;
+        $messageUpdate->body    = $request->bodyEdit;
 
-            if (isset($deleteImageCheck)) {
-                $messageUpdate->image_name = null;
+        $deleteImageCheck       = $request->deleteImage;
 
-                Storage::delete($request->oldImagePath);
+        if (isset($deleteImageCheck)) {
+            $messageUpdate->image_name = null;
 
-                $update = $messageUpdate->save();
-
-                return $update;
-            }
-
-            $image = $request->file('imageEdit');
-            isset($image) ? (isset($request->oldImagePath) ? Storage::delete($request->oldImagePath) : null) : null;
-
-            $imageName = isset($image) ? $messageUpdate->title . '+' . $image->getClientOriginalName() : null;
-            isset($image) ? $image->storeAs('public/images', $imageName) : null;
-            $messageUpdate->image_name = isset($image) ? $imageName : null;
+            Storage::delete($request->oldImagePath);
 
             $update = $messageUpdate->save();
 
             return $update;
-        } else {
-            return false;
         }
+
+        $image = $request->file('imageEdit');
+
+        if (isset($image)) {
+            isset($request->oldImagePath) ? Storage::delete($request->oldImagePath) : null;
+
+            $imagePath                  = $image->store('public/images');
+
+            $messageUpdate->image_name  = explode('/', $imagePath)[2];
+        }
+
+        $update = $messageUpdate->save();
+
+        return $update;
     }
 
     public function delete(Request $request)
     {
-        $isMember = filter_var($request->isMember, FILTER_VALIDATE_BOOL);
+        if (!($this->passwordValidation($request) || filter_var($request->isMember, FILTER_VALIDATE_BOOL))) return false;
 
-        if ($this->passwordValidation($request, 'delete') || $isMember) {
-            Message::find($request->idDelete)->forceDelete();
-            Storage::delete($request->image);
+        Message::find($request->id)->forceDelete();
+        Storage::delete($request->image);
 
-            return back();
-        } else {
-            return false;
-        }
+        return back();
     }
 }

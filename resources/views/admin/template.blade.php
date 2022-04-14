@@ -43,6 +43,18 @@
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 
+    {{-- Custom CSS --}}
+    <style>
+        pre.body {
+            background-color: rgba(0, 0, 0, 0);
+            border: 0px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            padding: 0px;
+            font-size: 14px;
+        }
+
+    </style>
+
     {{-- JS Script --}}
     <!-- jQuery 3 -->
     <script src="{{ asset('assets/admin/plugin/jquery/jquery.js') }}"></script>

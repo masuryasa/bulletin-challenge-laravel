@@ -63,7 +63,7 @@ $(document).ready(function() {
                     $('#bodyEdit').val(response.body);
                     $('#oldImagePath').val(response.image_name ? 'public/images/'+response.image_name : null);
                     $('#imageDisplay').attr('src',response.image_name ? 'storage/images/'+response.image_name : 'http://via.placeholder.com/500x500');
-                    $('#imageNameEdit').val(response.image_name ? (response.image_name).split('+')[1] : null);
+                    $('#imageNameEdit').val(response.image_name ?? null);
                 }
             });
         } else {
@@ -75,7 +75,7 @@ $(document).ready(function() {
                 },
                 method: 'post',
                 success: (valid) => {
-                    if (valid){
+                    if (valid) {
                         modalEdit.attr('id','editModal');
                         modalEdit.modal('show');
 
@@ -90,9 +90,9 @@ $(document).ready(function() {
                                 $('#nameEdit').val(response.name);
                                 $('#titleEdit').val(response.title);
                                 $('#bodyEdit').val(response.body);
-                                $('#oldImagePath').val(response.image_name ? 'public/images/'+response.image_name : null);
+                                $('#oldImagePath').val(response.image_name ? 'public/images/'+response.image_name : '');
                                 $('#imageDisplay').attr('src',response.image_name ? 'storage/images/'+response.image_name : 'http://via.placeholder.com/500x500');
-                                $('#imageNameEdit').val(response.image_name ? (response.image_name).split('+')[1] : null);
+                                $('#imageNameEdit').val(response.image_name ?? '');
                             }
                         });
                     } else {
@@ -123,6 +123,7 @@ $(document).ready(function() {
            success: (response) => {
                if (response) {
                 $('#alertStatus').text('Success to updated message!');
+                $('#alertMessage').text('');
                 updateAlert.addClass('alert-success');
                 updateAlert.css('display','block');
                 setTimeout(()=>location.reload(),2000);

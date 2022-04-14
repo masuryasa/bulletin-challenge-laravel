@@ -71,7 +71,7 @@
                     <form enctype="multipart/form-data" id="formEdit">
                         @csrf
                         <div class="modal-body">
-                            <input type="hidden" name="idEdit" id="idEdit">
+                            <input type="hidden" name="id" id="idEdit">
                             <input type="hidden" name="oldImagePath" id="oldImagePath">
                             <input type="hidden" name="isMember" id="isMemberEdit" value="false">
                             <div class="form-group">
@@ -88,7 +88,6 @@
                                 <label>Title</label>
                                 <input type="text" class="form-control @error('title') is-invalid @enderror" id="titleEdit"
                                     name="titleEdit">
-                                {{-- <p class="small text-danger mt-5">*Your title must be 3 to 16 characters long</p> --}}
                                 @error('title')
                                     <div class="invalid-input">
                                         {{ $message }}
@@ -131,7 +130,7 @@
                                 <div class="form-group">
                                     <label>Password</label>
                                     <input type="password" class="form-control @error('password') is-invalid @enderror"
-                                        id="passwordEdit" name="passwordEdit">
+                                        id="passwordEdit" name="password">
                                     @error('password')
                                         <div class="invalid-input">
                                             {{ $message }}
@@ -155,8 +154,8 @@
                 <div class="modal-content">
                     <form action="{{ route('delete') }}" method="POST" enctype="multipart/form-data">
                         @csrf
-                        <input type="hidden" name="idDelete" id="idDelete">
-                        <input type="hidden" name="passwordDelete" id="passwordDelete">
+                        <input type="hidden" name="id" id="idDelete">
+                        <input type="hidden" name="password" id="passwordDelete">
                         <input type="hidden" name="image" id="oldImagePathDelete">
                         <input type="hidden" name="isMember" id="isMemberDelete" value="false">
                         <div class="modal-header">

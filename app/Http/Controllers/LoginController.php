@@ -23,12 +23,13 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $remember = true)) {
             $request->session()->regenerate();
 
-            if (auth()->user()->email == "admin@gmail.com") {
+            if (auth()->user()->email === "admin@gmail.com") {
                 return redirect()->route('admin.index');
             }
 
             return redirect('')->with('loginStatus', ', you are logged in now.');
         }
+
         return back()->with('loginStatus', 'Login Failed! Please try again.');
     }
 
