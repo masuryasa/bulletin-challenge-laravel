@@ -58,7 +58,7 @@ $page = 'home';
                 <section class="sidebar">
                     <!-- sidebar menu: : style can be found in sidebar.less -->
                     <ul class="sidebar-menu" data-widget="tree">
-                        <li class="{{ $page == 'home' ? 'active' : null }}">
+                        <li class="{{ $page == 'home' ? 'active' : '' }}">
                             <a href="{{ route('admin.index') }}"><i class="fa fa-dashboard"></i>
                                 <span>Dashboard</span>
                             </a>
@@ -193,30 +193,35 @@ $page = 'home';
                                             <tbody>
                                                 @foreach ($messages as $message)
                                                     @php
+                                                        $trashed = $message->trashed();
+                                                        $msgId = $message->id;
+                                                        $msgTitle = $message->title;
+                                                        $msgBody = $message->body;
+                                                        $msgImageName = $message->image_name;
                                                         [$date, $time] = explode(' ', $message->created_at);
                                                     @endphp
 
-                                                    <tr class="{{ $message->trashed() ? 'bg-gray-light' : '' }}">
+                                                    <tr class="{{ $trashed ? 'bg-gray-light' : '' }}">
                                                         <td>
-                                                            @if (!$message->trashed())
+                                                            @if (!$trashed)
                                                                 <input type="checkbox" name="checkboxItem"
-                                                                    class="checkboxItem" data-id="{{ $message->id }}">
+                                                                    class="checkboxItem" data-id="{{ $msgId }}">
                                                             @else
                                                                 {!! '&nbsp;' !!}
                                                             @endif
                                                         </td>
-                                                        <td>{{ $message->id }}</td>
-                                                        <td>{{ $message->title }}</td>
+                                                        <td>{{ $msgId }}</td>
+                                                        <td>{{ $msgTitle }}</td>
                                                         <td>
-                                                            <pre class="body">{{ $message->body }}</pre>
+                                                            <p class="pre-body">{{ $msgBody }}</p>
                                                         </td>
                                                         <td>
-                                                            @if (!$message->trashed() && isset($message->image_name))
+                                                            @if (!$trashed && !is_null($msgImageName))
                                                                 <img class="img-prev"
-                                                                    src="{{ asset('storage/images/' . $message->image_name) }}"
+                                                                    src="{{ asset('storage/images/' . $msgImageName) }}"
                                                                     style="max-width: 100px">
                                                                 <a href="#" data-toggle="modal" data-target="#deleteModal"
-                                                                    data-id="{{ $message->id }}" data-button="image"
+                                                                    data-id="{{ $msgId }}" data-button="image"
                                                                     class="btn btn-danger ml-10 btn-img admin-delete-message"
                                                                     rel="tooltip" title="Delete Image"><i
                                                                         class="fa fa-trash"></i></a>
@@ -228,14 +233,14 @@ $page = 'home';
                                                             <span class="small">{{ $time }}</span>
                                                         </td>
                                                         <td>
-                                                            @if ($message->trashed())
+                                                            @if ($trashed)
                                                                 <a href="#" class="btn btn-default btn-recover"
-                                                                    data-id="{{ $message->id }}" rel="tooltip"
+                                                                    data-id="{{ $msgId }}" rel="tooltip"
                                                                     title="Recover"><i class="fa fa-repeat"></i></a>
                                                             @else
                                                                 <a type="submit" href="#" data-toggle="modal"
                                                                     data-target="#deleteModal"
-                                                                    data-id="{{ $message->id }}" data-button="message"
+                                                                    data-id="{{ $msgId }}" data-button="message"
                                                                     class="btn btn-danger admin-delete-message"
                                                                     rel="tooltip" title="Delete"><i
                                                                         class="fa fa-trash"></i></a>

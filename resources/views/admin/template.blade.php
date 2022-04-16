@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Timedoor Admin | Dashboard</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Timedoor Admin | Dashboard</title>
 
     {{-- BS Style --}}
     <!-- Bootstrap 3.3.7 -->
@@ -45,12 +46,8 @@
 
     {{-- Custom CSS --}}
     <style>
-        pre.body {
-            background-color: rgba(0, 0, 0, 0);
-            border: 0px;
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            padding: 0px;
-            font-size: 14px;
+        .pre-body {
+            white-space: pre-wrap;
         }
 
     </style>

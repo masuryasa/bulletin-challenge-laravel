@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Message;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class MessageController extends Controller
@@ -70,7 +71,9 @@ class MessageController extends Controller
 
     public function update(Request $request)
     {
-        if (!($this->passwordValidation($request) || filter_var($request->isMember, FILTER_VALIDATE_BOOL))) return false;
+        $memberValidation = filter_var($request->isMember, FILTER_VALIDATE_BOOL) && ($this->getDetail($request)->user_id === Auth::id());
+
+        if (!($this->passwordValidation($request) || $memberValidation)) return false;
 
         $request->validate([
             'nameEdit' => 'required|min:3|max:16',
@@ -115,7 +118,9 @@ class MessageController extends Controller
 
     public function delete(Request $request)
     {
-        if (!($this->passwordValidation($request) || filter_var($request->isMember, FILTER_VALIDATE_BOOL))) return false;
+        $memberValidation = filter_var($request->isMember, FILTER_VALIDATE_BOOL) && ($this->getDetail($request)->user_id === Auth::id());
+
+        if (!($this->passwordValidation($request) || $memberValidation)) return false;
 
         Message::find($request->id)->forceDelete();
         Storage::delete($request->image);
