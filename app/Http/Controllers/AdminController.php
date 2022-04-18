@@ -20,26 +20,24 @@ class AdminController extends Controller
     public function delete(Request $request)
     {
         if ($request->button === "messageAll") {
-            if (isset($request->id)) {
-                $ids = explode(',', $request->id);
+            if (empty($request->id)) return back();
 
-                foreach ($ids as $id) {
-                    $message    = Message::find($id);
+            $ids = explode(',', $request->id);
 
-                    $image_name = $message->image_name;
+            foreach ($ids as $id) {
+                $message    = Message::find($id);
 
-                    if (isset($image_name)) {
-                        Storage::delete("public/images/" . $image_name);
+                $image_name = $message->image_name;
 
-                        $message->image_name = null;
-                    }
+                if (isset($image_name)) {
+                    Storage::delete("public/images/" . $image_name);
 
-                    $message->save();
-
-                    $message->delete();
+                    $message->image_name = null;
                 }
-            } else {
-                return back();
+
+                $message->save();
+
+                $message->delete();
             }
         } else {
             $message    = Message::find($request->id);
@@ -64,8 +62,6 @@ class AdminController extends Controller
 
     public function recover(Request $request)
     {
-        $recover = Message::withTrashed()->where('id', $request->id)->restore();
-
-        return $recover;
+        return Message::withTrashed()->where('id', $request->id)->restore();
     }
 }
