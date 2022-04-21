@@ -1,8 +1,6 @@
 @extends('layout.template')
 
-@section('title')
-    | Login
-@endsection
+@section('title', '| Login')
 
 <body id="login">
     @if (session()->has('loginStatus'))

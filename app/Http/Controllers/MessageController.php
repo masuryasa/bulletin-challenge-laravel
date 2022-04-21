@@ -15,7 +15,16 @@ class MessageController extends Controller
     {
         $messages = Message::latest('id')->with('user')->paginate(20);
 
-        return view('index', ['messages' => $messages]);
+        if (Auth::check()) {
+            return view('index', [
+                'messages' => $messages,
+                'emailVerifiedNull' => is_null(Auth::user()->email_verified_at),
+                'authUserId' => Auth::user()->id,
+                'authUserName' => Auth::user()->name
+            ]);
+        } else {
+            return view('index', ['messages' => $messages]);
+        }
     }
 
     public function store(Request $request)

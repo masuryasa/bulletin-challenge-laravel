@@ -1,8 +1,6 @@
 @extends('layout.template')
 
-@section('title')
-    | Register Confirm
-@endsection
+@section('title', '| Register Confirm')
 
 <body id="login">
     <div class="box login-box">

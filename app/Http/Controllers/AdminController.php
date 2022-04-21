@@ -14,7 +14,10 @@ class AdminController extends Controller
             ->title()->body()->image()->status()
             ->paginate(20)->withQueryString();
 
-        return view('admin.index', ['messages' => $messages]);
+        return view('admin.index', [
+            'messages' => $messages,
+            'page' => 'home'
+        ]);
     }
 
     public function delete(Request $request)

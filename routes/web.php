@@ -51,11 +51,11 @@ Route::prefix('register')->group(function () {
 Route::get('login', [LoginController::class, 'login'])->name('login');
 Route::post('login', [LoginController::class, 'authenticate'])->name('login.action');
 
-Route::get('logout', [LoginController::class, 'logout'])->middleware('auth')->name('logout');
+Route::get('logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::group(
     [
-        'middleware' => ['auth', 'verified', 'admin'],
+        'middleware' => ['admin'],
         'prefix' => 'admin'
     ],
     function () {

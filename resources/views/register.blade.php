@@ -1,8 +1,6 @@
 @extends('layout.template')
 
-@section('title')
-    | Register
-@endsection
+@section('title', '| Register')
 
 <body id="login">
     <div class="box login-box">

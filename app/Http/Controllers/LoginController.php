@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -20,14 +21,21 @@ class LoginController extends Controller
             'password' => 'required|min:8|max:16'
         ]);
 
-        if (Auth::attempt($credentials, $remember = true)) {
-            $request->session()->regenerate();
+        $admin = Admin::where('email', '=', $credentials['email'])->exists();
 
-            if (auth()->user()->email === "admin@gmail.com") {
+        if ($admin) {
+            if (Auth::guard('admin')->attempt($credentials, $remember = true)) {
+                $request->session()->regenerate();
+
                 return redirect()->route('admin.index');
             }
+        } else {
+            if (Auth::attempt($credentials, $remember = true)) {
+                $request->session()->regenerate();
 
-            return redirect('')->with('loginStatus', ', you are logged in now.');
+                return redirect('')
+                    ->with('loginStatus', ', you are logged in now.',);
+            }
         }
 
         return back()->with('loginStatus', 'Login Failed! Please try again.');
@@ -37,7 +45,10 @@ class LoginController extends Controller
     {
         Session::flush();
 
-        Auth::logout();
+        if (Auth::guard('admin')->check())
+            Auth::guard('admin')->logout();
+        else
+            Auth::logout();
 
         return redirect('');
     }

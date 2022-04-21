@@ -26,3 +26,9 @@
 - Gunakan html5 standart structure :heavy_check_mark:
 - Rapikan atribute html pada blade :heavy_check_mark:
 - `is_null()` vs `isset()` :heavy_check_mark:
+
+### 3
+
+- Data yang dapat dikirim dari controller jangan ditempatkan di blade
+- Elemen hasil `foreach()` lebih mudah dibaca dan lebih efisien jika langsung digunakan tanpa disimpan ke variable
+- Jangan mengulang banyak kode (tag html) pada blade, manfaatkan pengkondisian

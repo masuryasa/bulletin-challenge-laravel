@@ -1,7 +1,3 @@
-@php
-$page = 'home';
-@endphp
-
 @extends('admin.template')
 
 @section('body')
@@ -11,7 +7,7 @@ $page = 'home';
 
             <header class="main-header">
                 <!-- Logo -->
-                <a href="index2.html" class="logo">
+                <a href="{{ route('admin.index') }}" class="logo">
                     <!-- mini logo for sidebar mini 50x50 pixels -->
                     <span class="logo-mini"><b>T</b>D</span>
                     <!-- logo for regular state and mobile devices -->
@@ -29,7 +25,7 @@ $page = 'home';
                             <!-- User Account: style can be found in dropdown.less -->
                             <li class="dropdown user user-menu">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                    <span class="hidden-xs">Hello, Admin </span>
+                                    <span class="hidden-xs">Hello, {{ Auth::guard('admin')->user()->name }} </span>
                                 </a>
                                 <ul class="dropdown-menu">
                                     <!-- User image -->
@@ -192,36 +188,27 @@ $page = 'home';
                                             </thead>
                                             <tbody>
                                                 @foreach ($messages as $message)
-                                                    @php
-                                                        $trashed = $message->trashed();
-                                                        $msgId = $message->id;
-                                                        $msgTitle = $message->title;
-                                                        $msgBody = $message->body;
-                                                        $msgImageName = $message->image_name;
-                                                        [$date, $time] = explode(' ', $message->created_at);
-                                                    @endphp
-
-                                                    <tr class="{{ $trashed ? 'bg-gray-light' : '' }}">
+                                                    <tr class="{{ $message->trashed() ? 'bg-gray-light' : '' }}">
                                                         <td>
-                                                            @if (!$trashed)
+                                                            @if (!$message->trashed())
                                                                 <input type="checkbox" name="checkboxItem"
-                                                                    class="checkboxItem" data-id="{{ $msgId }}">
+                                                                    class="checkboxItem" data-id="{{ $message->id }}">
                                                             @else
                                                                 {!! '&nbsp;' !!}
                                                             @endif
                                                         </td>
-                                                        <td>{{ $msgId }}</td>
-                                                        <td>{{ $msgTitle }}</td>
+                                                        <td>{{ $message->id }}</td>
+                                                        <td>{{ $message->title }}</td>
                                                         <td>
-                                                            <p class="pre-body">{{ $msgBody }}</p>
+                                                            <p class="pre-body">{{ $message->body }}</p>
                                                         </td>
                                                         <td>
-                                                            @if (!$trashed && !is_null($msgImageName))
+                                                            @if (!$message->trashed() && !is_null($message->image_name))
                                                                 <img class="img-prev"
-                                                                    src="{{ asset('storage/images/' . $msgImageName) }}"
+                                                                    src="{{ asset('storage/images/' . $message->image_name) }}"
                                                                     style="max-width: 100px">
                                                                 <a href="#" data-toggle="modal" data-target="#deleteModal"
-                                                                    data-id="{{ $msgId }}" data-button="image"
+                                                                    data-id="{{ $message->id }}" data-button="image"
                                                                     class="btn btn-danger ml-10 btn-img admin-delete-message"
                                                                     rel="tooltip" title="Delete Image"><i
                                                                         class="fa fa-trash"></i></a>
@@ -229,18 +216,19 @@ $page = 'home';
                                                         </td>
 
                                                         <td>
-                                                            {{ $date }}<br>
-                                                            <span class="small">{{ $time }}</span>
+                                                            {{ explode(' ', $message->created_at)[0] }}<br>
+                                                            <span
+                                                                class="small">{{ explode(' ', $message->created_at)[1] }}</span>
                                                         </td>
                                                         <td>
-                                                            @if ($trashed)
+                                                            @if ($message->trashed())
                                                                 <a href="#" class="btn btn-default btn-recover"
-                                                                    data-id="{{ $msgId }}" rel="tooltip"
+                                                                    data-id="{{ $message->id }}" rel="tooltip"
                                                                     title="Recover"><i class="fa fa-repeat"></i></a>
                                                             @else
                                                                 <a type="submit" href="#" data-toggle="modal"
                                                                     data-target="#deleteModal"
-                                                                    data-id="{{ $msgId }}" data-button="message"
+                                                                    data-id="{{ $message->id }}" data-button="message"
                                                                     class="btn btn-danger admin-delete-message"
                                                                     rel="tooltip" title="Delete"><i
                                                                         class="fa fa-trash"></i></a>

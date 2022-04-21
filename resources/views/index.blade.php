@@ -1,12 +1,5 @@
 @extends('layout.user')
 @section('main-container')
-    @auth
-        @php
-        $emailVerifiedNull = is_null(auth()->user()->email_verified_at);
-        $authUserId = auth()->user()->id;
-        $authUserName = auth()->user()->name;
-        @endphp
-    @endauth
 
     @if (session()->has('loginStatus'))
         <div class="row" id="rowAlert">
@@ -55,6 +48,7 @@
             <div class="text-center">
                 <h1 class="text-green mb-30"><b>Level 8 Challenge</b></h1>
             </div>
+
             <form action="{{ route('store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
@@ -143,95 +137,57 @@
             <hr>
             @if (count($messages) > 0)
                 @foreach ($messages as $message)
-                    @php
-                        $msgId = $message->id;
-                        $msgTitle = $message->title;
-                        $msgName = $message->name;
-                        $msgUserId = $message->user_id;
-                        $msgBody = $message->body;
-                        [$date, $time] = explode(' ', $message->created_at);
-
-                        $msgPassword = $message->password ?: null;
-                        $msgImageName = $message->image_name ?: null;
-                    @endphp
-
-                    @guest
+                    @if (!(auth()->user() && $emailVerifiedNull))
                         <div class="post">
                             <div class="clearfix">
                                 <div class="pull-left">
-                                    <h2 class="mb-5 text-green wrap-text"><b>{{ $msgTitle }}</b></h2>
+                                    <h2 class="mb-5 text-green wrap-text"><b>{{ $message->title }}</b></h2>
                                 </div>
                                 <div class="pull-right text-right">
-                                    <p class="text-lgray">{{ $date }}<br /><span
-                                            class="small">{{ $time }}</span>
+                                    <p class="text-lgray">{{ explode(' ', $message->created_at)[0] }}<br /><span
+                                            class="small">{{ explode(' ', $message->created_at)[1] }}</span>
                                     </p>
                                 </div>
                             </div>
-                            <h4 class="mb-20">{{ $msgName }} <span class="text-id">
-                                    {{ $msgUserId ?: '-' }}
+                            <h4 class="mb-20">{{ $message->name }} <span class="text-id">
+                                    {{ $message->user_id ?: '-' }}
                                 </span>
                             </h4>
-                            <p class="pre-body">{{ $msgBody }}</p>
+                            <p class="pre-body">{{ $message->body }}</p>
 
-                            @if (!is_null($msgImageName))
+                            @if (!is_null($message->image_name))
                                 <img class="img-responsive img-post my-15"
-                                    src="{{ asset('storage/images/' . $msgImageName) }}" alt="image-message" />
+                                    src="{{ asset('storage/images/' . $message->image_name) }}" alt="image-message" />
                             @endif
 
-                            @if (!is_null($msgPassword) && !$msgUserId)
+                            @if (!auth()->user() && !is_null($message->password) && !$message->user_id)
                                 <form class="form-inline mt-50" id="formPassword">
                                     <div class="form-group mx-sm-3 mb-2">
-                                        <label for="inputPassword{{ $msgId }}" class="sr-only">Password</label>
-                                        <input type="password" class="form-control" id="inputPassword{{ $msgId }}"
-                                            placeholder="Password">
+                                        <label for="inputPassword{{ $message->id }}"
+                                            class="sr-only">Password</label>
+                                        <input type="password" class="form-control"
+                                            id="inputPassword{{ $message->id }}" placeholder="Password">
                                     </div>
                                     <a type="submit" class="btn btn-default mb-2 edit-message" data-toggle="modal"
-                                        data-target="#editModal" data-id="{{ $msgId }}"><i
+                                        data-target="#editModal" data-id="{{ $message->id }}"><i
                                             class="fa fa-pencil p-3"></i></a>
                                     <a type="submit" class="btn btn-danger mb-2 delete-message" data-toggle="modal"
-                                        data-target="#deleteModal" data-id="{{ $msgId }}"><i
+                                        data-target="#deleteModal" data-id="{{ $message->id }}"><i
                                             class="fa fa-trash p-3"></i></a>
                                 </form>
-                                <div class="invalid-input" id="invalidPassword{{ $msgId }}"></div>
+                                <div class="invalid-input" id="invalidPassword{{ $message->id }}"></div>
+                            @elseif (auth()->user() && !$emailVerifiedNull && $authUserId === $message->user_id)
+                                <form class="form-inline mt-50">
+                                    <a type="submit" class="btn btn-default mb-2 edit-message" data-toggle="modal"
+                                        data-target="#editModal" data-id="{{ $message->id }}"
+                                        data-user-id="{{ $authUserId }}"><i class="fa fa-pencil p-3"></i></a>
+                                    <a type="submit" class="btn btn-danger mb-2 delete-message" data-toggle="modal"
+                                        data-target="#deleteModal" data-id="{{ $message->id }}"
+                                        data-user-id="{{ $authUserId }}"><i class="fa fa-trash p-3"></i></a>
+                                </form>
                             @endif
                         </div>
-                    @else
-                        @if (!$emailVerifiedNull)
-                            <div class="post">
-                                <div class="clearfix">
-                                    <div class="pull-left">
-                                        <h2 class="mb-5 text-green wrap-text"><b>{{ $msgTitle }}</b></h2>
-                                    </div>
-                                    <div class="pull-right text-right">
-                                        <p class="text-lgray">{{ $date }}<br /><span
-                                                class="small">{{ $time }}</span>
-                                        </p>
-                                    </div>
-                                </div>
-                                <h4 class="mb-20">{{ $msgName }} <span class="text-id">
-                                        {{ $msgUserId ?: '-' }}
-                                    </span>
-                                </h4>
-                                <p class="pre-body">{{ $msgBody }}</p>
-
-                                @if (!is_null($msgImageName))
-                                    <img class="img-responsive img-post my-15"
-                                        src="{{ asset('storage/images/' . $msgImageName) }}" alt="image-message" />
-                                @endif
-
-                                @if ($authUserId === $msgUserId)
-                                    <form class="form-inline mt-50">
-                                        <a type="submit" class="btn btn-default mb-2 edit-message" data-toggle="modal"
-                                            data-target="#editModal" data-id="{{ $msgId }}"
-                                            data-user-id="{{ $authUserId }}"><i class="fa fa-pencil p-3"></i></a>
-                                        <a type="submit" class="btn btn-danger mb-2 delete-message" data-toggle="modal"
-                                            data-target="#deleteModal" data-id="{{ $msgId }}"
-                                            data-user-id="{{ $authUserId }}"><i class="fa fa-trash p-3"></i></a>
-                                    </form>
-                                @endif
-                            </div>
-                        @endif
-                    @endguest
+                    @endif
                 @endforeach
             @endif
 

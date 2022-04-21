@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Models\Admin;
 
 class IsAdmin
 {
@@ -17,7 +18,7 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::user() && Auth::user()->email === "admin@gmail.com") {
+        if (Auth::guard('admin')->user() && Admin::where('email', '=', Auth::guard('admin')->user()->email)->exists()) {
             return $next($request);
         }
 
