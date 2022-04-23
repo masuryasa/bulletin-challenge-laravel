@@ -44,6 +44,21 @@ class Message extends Model
         }
     }
 
+    public function getImagePathAttribute()
+    {
+        return "storage/images/{$this->image_name}";
+    }
+
+    public function getDateAttribute()
+    {
+        return "{$this->created_at->format('d-m-Y')}";
+    }
+
+    public function getTimeAttribute()
+    {
+        return "{$this->created_at->format('H:i:s')}";
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

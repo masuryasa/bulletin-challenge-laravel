@@ -54,7 +54,7 @@
                 <section class="sidebar">
                     <!-- sidebar menu: : style can be found in sidebar.less -->
                     <ul class="sidebar-menu" data-widget="tree">
-                        <li class="{{ $page == 'home' ? 'active' : '' }}">
+                        <li class="{{ $page === 'home' ? 'active' : '' }}">
                             <a href="{{ route('admin.index') }}"><i class="fa fa-dashboard"></i>
                                 <span>Dashboard</span>
                             </a>
@@ -117,7 +117,7 @@
                                                                 <label class="radio-inline">
                                                                     <input type="radio" name="imageOption" id="inlineRadio1"
                                                                         value="with"
-                                                                        @if (request('imageOption') == 'with') checked @endif>
+                                                                        @if (request('imageOption') === 'with') checked @endif>
                                                                     with
                                                                 </label>
                                                             </td>
@@ -125,7 +125,7 @@
                                                                 <label class="radio-inline">
                                                                     <input type="radio" name="imageOption" id="inlineRadio2"
                                                                         value="without"
-                                                                        @if (request('imageOption') == 'without') checked @endif>
+                                                                        @if (request('imageOption') === 'without') checked @endif>
                                                                     without
                                                                 </label>
                                                             </td>
@@ -133,7 +133,7 @@
                                                                 <label class="radio-inline">
                                                                     <input type="radio" name="imageOption" id="inlineRadio3"
                                                                         value="unspecified"
-                                                                        @if (request('imageOption') == 'unspecified') checked @endif>
+                                                                        @if (request('imageOption') === 'unspecified') checked @endif>
                                                                     unspecified
                                                                 </label>
                                                             </td>
@@ -144,14 +144,14 @@
                                                                 <label class="radio-inline">
                                                                     <input type="radio" name="statusOption"
                                                                         id="inlineRadio1" value="on"
-                                                                        @if (request('statusOption') == 'on') checked @endif> on
+                                                                        @if (request('statusOption') === 'on') checked @endif> on
                                                                 </label>
                                                             </td>
                                                             <td>
                                                                 <label class="radio-inline">
                                                                     <input type="radio" name="statusOption"
                                                                         id="inlineRadio2" value="deleted"
-                                                                        @if (request('statusOption') == 'deleted') checked @endif>
+                                                                        @if (request('statusOption') === 'deleted') checked @endif>
                                                                     delete
                                                                 </label>
                                                             </td>
@@ -159,7 +159,7 @@
                                                                 <label class="radio-inline">
                                                                     <input type="radio" name="statusOption"
                                                                         id="inlineRadio3" value="unspecified"
-                                                                        @if (request('statusOption') == 'unspecified') checked @endif>
+                                                                        @if (request('statusOption') === 'unspecified') checked @endif>
                                                                     unspecified
                                                                 </label>
                                                             </td>
@@ -257,9 +257,8 @@
                 <div class="pull-right hidden-xs">
                     <b>Version</b> 0.1.0
                 </div>
-                <strong>Copyright &copy; 2019 <a href="https://timedoor.net" class="text-green">Timedoor
-                        Indonesia</a>.</strong> All rights
-                reserved.
+                <strong>Copyright &copy; {{ date('Y') }} <a href="https://timedoor.net" class="text-green">Timedoor
+                        Indonesia</a>.</strong> All rights reserved.
             </footer>
 
             <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"

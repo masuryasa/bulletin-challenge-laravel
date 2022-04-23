@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Message;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -13,18 +14,18 @@ class MessageController extends Controller
 {
     public function index()
     {
-        $messages = Message::latest('id')->with('user')->paginate(20);
+        $messages = Message::latest('id')->with('user')->paginate(10);
 
-        if (Auth::check()) {
-            return view('index', [
-                'messages' => $messages,
-                'emailVerifiedNull' => is_null(Auth::user()->email_verified_at),
-                'authUserId' => Auth::user()->id,
-                'authUserName' => Auth::user()->name
-            ]);
-        } else {
+        if (!Auth::check()) {
             return view('index', ['messages' => $messages]);
         }
+
+        return view('index', [
+            'messages' => $messages,
+            'isEmailVerified' => !is_null(Auth::user()->email_verified_at),
+            'authUserId' => Auth::user()->id,
+            'authUserName' => Auth::user()->name
+        ]);
     }
 
     public function store(Request $request)
@@ -44,14 +45,13 @@ class MessageController extends Controller
         $message->body      = $request->body;
         $message->password  = is_null($request->password) ? null : Hash::make($request->password);
 
-        $image              = $request->file('image');
-
-        if (isset($image)) {
-            $imagePath              = $image->store('public/images');
+        if ($request->hasFile('image')) {
+            $imagePath              = $request->file('image')->store('public/images');
             $message->image_name    = explode('/', $imagePath)[2];
         }
 
-        $message->user_id   = $request->user_id;
+        $user = User::find($request->user_id);
+        $message->user()->associate($user);
 
         $message->save();
 
@@ -60,29 +60,26 @@ class MessageController extends Controller
 
     public function passwordValidation(Request $request)
     {
-        $id         = (int)$request->id;
-        $password   = $request->password;
+        $hashedPassword = Message::find($request->id)->password;
 
-        if (is_null($password)) return null;
-        else (int)$password;
+        return Hash::check($request->password, $hashedPassword);
+    }
 
-        $hashedPassword = Message::where('id', $id)->first()->password;
+    public function memberValidation(Request $request)
+    {
+        $message = Message::find($request->id);
 
-        return Hash::check($password, $hashedPassword);
+        return $message->user_id === $message->user->id;
     }
 
     public function getDetail(Request $request)
     {
-        $message = Message::all();
-
-        return $message->find($request->id);
+        return Message::find($request->id);
     }
 
     public function update(Request $request)
     {
-        $memberValidation = filter_var($request->isMember, FILTER_VALIDATE_BOOL) && ($this->getDetail($request)->user_id === Auth::id());
-
-        if (!($this->passwordValidation($request) || $memberValidation)) return false;
+        if (!($this->passwordValidation($request) || $this->memberValidation($request))) return false;
 
         $request->validate([
             'nameEdit' => 'required|min:3|max:16',
@@ -98,38 +95,28 @@ class MessageController extends Controller
         $messageUpdate->title   = $request->titleEdit;
         $messageUpdate->body    = $request->bodyEdit;
 
-        $deleteImageCheck       = $request->deleteImage;
-
-        if (isset($deleteImageCheck)) {
+        if (isset($request->deleteImage)) {
             $messageUpdate->image_name = null;
 
             Storage::delete($request->oldImagePath);
 
-            $update = $messageUpdate->save();
-
-            return $update;
+            return $messageUpdate->save();
         }
 
-        $image = $request->file('imageEdit');
-
-        if (isset($image)) {
+        if ($request->hasFile('imageEdit')) {
             isset($request->oldImagePath) ? Storage::delete($request->oldImagePath) : null;
 
-            $imagePath                  = $image->store('public/images');
+            $imagePath                  = $request->file('imageEdit')->store('public/images');
 
             $messageUpdate->image_name  = explode('/', $imagePath)[2];
         }
 
-        $update = $messageUpdate->save();
-
-        return $update;
+        return $messageUpdate->save();
     }
 
     public function delete(Request $request)
     {
-        $memberValidation = filter_var($request->isMember, FILTER_VALIDATE_BOOL) && ($this->getDetail($request)->user_id === Auth::id());
-
-        if (!($this->passwordValidation($request) || $memberValidation)) return false;
+        if (!($this->passwordValidation($request) || $this->memberValidation($request))) return false;
 
         Message::find($request->id)->forceDelete();
         Storage::delete($request->image);

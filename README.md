@@ -29,6 +29,21 @@
 
 ### 3
 
-- Data yang dapat dikirim dari controller jangan ditempatkan di blade
-- Elemen hasil `foreach()` lebih mudah dibaca dan lebih efisien jika langsung digunakan tanpa disimpan ke variable
-- Jangan mengulang banyak kode (tag html) pada blade, manfaatkan pengkondisian
+- Data yang dapat dikirim dari controller jangan ditempatkan di blade :heavy_check_mark:
+- Elemen hasil `foreach()` lebih mudah dibaca dan lebih efisien jika langsung digunakan tanpa disimpan ke variable :heavy_check_mark:
+- Jangan mengulang banyak kode (tag html) pada blade, manfaatkan pengkondisian :heavy_check_mark:
+
+### 4
+
+- Jangan append nama path image dengan string di blade :heavy_check_mark:
+- Jangan explode DateTime pada field created_at, gunakan DateTime format :heavy_check_mark:
+- Gunakan method `hasFile()` agar safety jika seandainya file tidak ada :heavy_check_mark:
+- Tahun copyright dengan function `date('Y')` :heavy_check_mark:
+- Efisiensi penggunaan query pada model :heavy_check_mark:
+- Gunakan `hasFile()` untuk mengecek apakah input memiliki file :heavy_check_mark:
+- Jangan assign FK (Foreign Key) secara hardcode, gunakan method `associate()` :heavy_check_mark:
+- Gunakan method `destroy()` untuk delete model berdasarkan id, dan delete image jadikan method `deleteImages()` --- DRY :heavy_check_mark:
+- Berikan action `error` response AJAX :heavy_check_mark:
+- Sederhanakan validasi isMember :heavy_check_mark:
+- Operator `==` dijadikan `===` :heavy_check_mark:
+- Penamaan variable buat lebih jelas/eksplisit, seperti `$emailVerifiedNull` jadi `$isEmailVerified` :heavy_check_mark:

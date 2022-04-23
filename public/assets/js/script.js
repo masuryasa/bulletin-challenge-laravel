@@ -64,6 +64,9 @@ $(document).ready(function() {
                     $('#oldImagePath').val(response.image_name ? 'public/images/'+response.image_name : null);
                     $('#imageDisplay').attr('src',response.image_name ? 'storage/images/'+response.image_name : 'http://via.placeholder.com/500x500');
                     $('#imageNameEdit').val(response.image_name ?? null);
+                },
+                error: (response) => {
+                    alert("Failed to show detail message! Error: ",response);
                 }
             });
         } else {
@@ -76,9 +79,6 @@ $(document).ready(function() {
                 method: 'post',
                 success: (valid) => {
                     if (valid) {
-                        modalEdit.attr('id','editModal');
-                        modalEdit.modal('show');
-
                         $.ajax({
                             url: 'message/get',
                             data: {
@@ -86,6 +86,9 @@ $(document).ready(function() {
                             },
                             method: 'post',
                             success: (response) => {
+                                modalEdit.attr('id','editModal');
+                                modalEdit.modal('show');
+
                                 $('#idEdit').val(response.id);
                                 $('#nameEdit').val(response.name);
                                 $('#titleEdit').val(response.title);
@@ -93,6 +96,9 @@ $(document).ready(function() {
                                 $('#oldImagePath').val(response.image_name ? 'public/images/'+response.image_name : '');
                                 $('#imageDisplay').attr('src',response.image_name ? 'storage/images/'+response.image_name : 'http://via.placeholder.com/500x500');
                                 $('#imageNameEdit').val(response.image_name ?? '');
+                            },
+                            error: (response) => {
+                                alert("Failed to show detail message! Error: ",response);
                             }
                         });
                     } else {
@@ -166,6 +172,9 @@ $(document).ready(function() {
                     $('#idDelete').val(response.id);
                     $('#oldImagePathDelete').val('public/images/'+response.image_name);
                     $('#isMemberDelete').val('true');
+                },
+                error: (response) => {
+                    alert("Failed to get message! Error: ",response);
                 }
             });
         } else {
@@ -194,6 +203,9 @@ $(document).ready(function() {
                     } else {
                         $('#invalidPassword'+id).text("You entered wrong password!");
                     }
+                },
+                error: (response) => {
+                    alert("Failed to get message! Error: ",response);
                 }
             });
         }

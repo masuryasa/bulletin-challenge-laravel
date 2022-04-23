@@ -8,7 +8,7 @@
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
                             aria-hidden="true">&times;</span></button>
                     <b>{{ $authUserName }}</b>{{ session('loginStatus') }}
-                    @if ($emailVerifiedNull)
+                    @if (!$isEmailVerified)
                         <div id="sentMessage">
                             <form action="{{ route('verification.send') }}" method="POST" class="d-inline">
                                 @csrf
@@ -70,7 +70,7 @@
                 <div class="form-group">
                     <label>Title</label>
                     <input type="text" name="title" class="form-control @error('title') is-invalid @enderror"
-                        value="{{ old('title') }}" @auth autofocus {{ $emailVerifiedNull ? 'readonly' : '' }} @endauth
+                        value="{{ old('title') }}" @auth autofocus {{ !$isEmailVerified ? 'readonly' : '' }} @endauth
                         required>
                     @error('title')
                         <div class="invalid-input">
@@ -81,7 +81,7 @@
                 <div class="form-group">
                     <label>Body</label>
                     <textarea rows="5" name="body" class="form-control @error('body') is-invalid @enderror" @auth
-                        {{ $emailVerifiedNull ? 'readonly' : '' }} @endauth required>{{ old('body') }}</textarea>
+                        {{ !$isEmailVerified ? 'readonly' : '' }} @endauth required>{{ old('body') }}</textarea>
                     @error('body')
                         <div class="invalid-input">
                             {{ $message }}
@@ -96,7 +96,7 @@
                         <span class="input-group-btn">
                             <span class="btn btn-default btn-file">
                                 <i class="fa fa-folder-open"></i>&nbsp;Browse <input type="file" name="image" @auth
-                                    {{ $emailVerifiedNull ? 'disabled' : '' }} @endauth multiple>
+                                    {{ !$isEmailVerified ? 'disabled' : '' }} @endauth multiple>
                             </span>
                         </span>
                     </div>
@@ -125,7 +125,7 @@
 
                 @auth
                     <div class="text-center mt-30 mb-30">
-                        @if (!$emailVerifiedNull)
+                        @if ($isEmailVerified)
                             <button type="submit" class="btn btn-primary">Submit</button>
                         @else
                             <div id="unverified_submit" class="btn btn-primary" disabled>Submit</div>
@@ -137,15 +137,15 @@
             <hr>
             @if (count($messages) > 0)
                 @foreach ($messages as $message)
-                    @if (!(auth()->user() && $emailVerifiedNull))
+                    @if (!(auth()->user() && !$isEmailVerified))
                         <div class="post">
                             <div class="clearfix">
                                 <div class="pull-left">
                                     <h2 class="mb-5 text-green wrap-text"><b>{{ $message->title }}</b></h2>
                                 </div>
                                 <div class="pull-right text-right">
-                                    <p class="text-lgray">{{ explode(' ', $message->created_at)[0] }}<br /><span
-                                            class="small">{{ explode(' ', $message->created_at)[1] }}</span>
+                                    <p class="text-lgray">{{ $message->date }}<br /><span
+                                            class="small">{{ $message->time }}</span>
                                     </p>
                                 </div>
                             </div>
@@ -156,8 +156,8 @@
                             <p class="pre-body">{{ $message->body }}</p>
 
                             @if (!is_null($message->image_name))
-                                <img class="img-responsive img-post my-15"
-                                    src="{{ asset('storage/images/' . $message->image_name) }}" alt="image-message" />
+                                <img class="img-responsive img-post my-15" src="{{ asset($message->image_path) }}"
+                                    alt="image-message" />
                             @endif
 
                             @if (!auth()->user() && !is_null($message->password) && !$message->user_id)
@@ -176,7 +176,7 @@
                                             class="fa fa-trash p-3"></i></a>
                                 </form>
                                 <div class="invalid-input" id="invalidPassword{{ $message->id }}"></div>
-                            @elseif (auth()->user() && !$emailVerifiedNull && $authUserId === $message->user_id)
+                            @elseif (auth()->user() && $isEmailVerified && $authUserId === $message->user_id)
                                 <form class="form-inline mt-50">
                                     <a type="submit" class="btn btn-default mb-2 edit-message" data-toggle="modal"
                                         data-target="#editModal" data-id="{{ $message->id }}"

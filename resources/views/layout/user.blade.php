@@ -43,11 +43,8 @@
         </main>
 
         <footer>
-            <p class="font12">Copyright &copy;
-                <script>
-                    document.write(new Date().getFullYear());
-                </script> by <a href="https://timedoor.net" class="text-green">PT. TIMEDOOR
-                    INDONESIA</a>
+            <p class="font12">Copyright &copy; {{ date('Y') }} by <a href="https://timedoor.net"
+                    class="text-green">PT. TIMEDOOR INDONESIA</a>
             </p>
         </footer>
 
@@ -73,7 +70,6 @@
                         <div class="modal-body">
                             <input type="hidden" name="id" id="idEdit">
                             <input type="hidden" name="oldImagePath" id="oldImagePath">
-                            <input type="hidden" name="isMember" id="isMemberEdit" value="false">
                             <div class="form-group">
                                 <label>Name</label>
                                 <input type="text" class="form-control @error('nameEdit') is-invalid @enderror"
@@ -157,7 +153,6 @@
                         <input type="hidden" name="id" id="idDelete">
                         <input type="hidden" name="password" id="passwordDelete">
                         <input type="hidden" name="image" id="oldImagePathDelete">
-                        <input type="hidden" name="isMember" id="isMemberDelete" value="false">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal"><span
                                     aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>

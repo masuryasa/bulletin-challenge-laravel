@@ -16,6 +16,9 @@ $(document).ready(function() {
             success: (response) => {
                 $('#idMessage').val(response.id);
                 $('#buttonType').val(button);
+            },
+            error: (response) => {
+                alert("Failed to get message! Error: ",response);
             }
         });
      });
@@ -34,7 +37,7 @@ $(document).ready(function() {
     });
 
     $('#deleteAllButton').on('click', function(){
-        $('#buttonType').val('messageAll');
+        $('#buttonType').val('messages');
         const idMessage = $('#idMessage');
         checkboxIds.length > 0 ? idMessage.val(checkboxIds.join()) : idMessage.val('');
     });
@@ -46,8 +49,11 @@ $(document).ready(function() {
             url: 'admin/recover',
             data: {id:id},
             method: 'post',
-            success: (response)=>{
+            success: (response) => {
                 location.reload();
+            },
+            error: (response) => {
+                alert("Failed to recover message! Error: ",response);
             }
         });
      });

@@ -22,49 +22,42 @@ class AdminController extends Controller
 
     public function delete(Request $request)
     {
-        if ($request->button === "messageAll") {
+        $ids = explode(',', $request->id);
+
+        if ($request->button === "messages") {
             if (empty($request->id)) return back();
 
-            $ids = explode(',', $request->id);
-
-            foreach ($ids as $id) {
-                $message    = Message::find($id);
-
-                $image_name = $message->image_name;
-
-                if (isset($image_name)) {
-                    Storage::delete("public/images/" . $image_name);
-
-                    $message->image_name = null;
-                }
-
-                $message->save();
-
-                $message->delete();
-            }
+            $this->deleteImages($ids);
+            Message::destroy($ids);
         } else {
-            $message    = Message::find($request->id);
-
-            $image_name = $message->image_name;
-
-            if (isset($image_name)) {
-                Storage::delete("public/images/" . $image_name);
-
-                $message->image_name = null;
-            }
-
-            $message->save();
+            $this->deleteImages($ids);
 
             if ($request->button === "message") {
-                $message->delete();
+                Message::destroy($request->id);
             }
         }
 
         return back();
     }
 
+    public function deleteImages($ids)
+    {
+        foreach ($ids as $id) {
+            $message    = Message::find($id);
+            $image_name = $message->image_name;
+
+            if (!is_null($image_name)) {
+                Storage::delete("public/images/" . $image_name);
+
+                $message->image_name = null;
+            }
+
+            $message->save();
+        }
+    }
+
     public function recover(Request $request)
     {
-        return Message::withTrashed()->where('id', $request->id)->restore();
+        return Message::withTrashed()->find($request->id)->restore();
     }
 }
