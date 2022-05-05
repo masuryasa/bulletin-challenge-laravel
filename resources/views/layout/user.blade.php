@@ -22,11 +22,11 @@
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                         <ul class="nav navbar-nav navbar-right">
                             @auth
-                                <li><a href="{{ route('logout') }}">Logout</a></li>
+                                <li><a href="{{ route('messages.logout') }}">Logout</a></li>
                             @endauth
 
                             @guest
-                                <li><a href="{{ route('login') }}">Login</a></li>
+                                <li><a href="{{ route('messages.login') }}">Login</a></li>
                                 <li><a href="{{ route('register-form') }}">Register</a></li>
                             @endguest
                         </ul>
@@ -66,6 +66,7 @@
                         <h4 class="modal-title" id="myModalLabel">Edit Item</h4>
                     </div>
                     <form enctype="multipart/form-data" id="formEdit">
+                        @method('put')
                         @csrf
                         <div class="modal-body">
                             <input type="hidden" name="id" id="idEdit">
@@ -148,7 +149,7 @@
         <div class="modal modal-delete fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <form action="{{ route('delete') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('messages.destroy') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <input type="hidden" name="id" id="idDelete">
                         <input type="hidden" name="password" id="passwordDelete">

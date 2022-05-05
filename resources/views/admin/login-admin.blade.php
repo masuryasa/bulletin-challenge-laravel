@@ -3,24 +3,12 @@
 @section('title', '| Login')
 
 <body id="login">
-    @if (session()->has('loginStatus'))
-        <div class="box" id="rowAlert">
-            <div class="col-md-6 col-md-offset-3 p-30">
-                <div class="alert alert-danger alert-dismissible" role="alert">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
-                    {{ session('loginStatus') }}
-                </div>
-            </div>
-        </div>
-    @endif
-
     <div class="box login-box">
         <div class="login-box-head">
             <h1 class="mb-5">Login</h1>
             <p class="text-lgray">Please login to continue...</p>
         </div>
-        <form action="{{ route('messages.login.action') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('admins.login.action') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="login-box-body">
                 <div class="form-group">

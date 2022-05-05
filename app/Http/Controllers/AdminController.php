@@ -2,12 +2,48 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Message;
+use App\Models\{Admin, Message};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class AdminController extends Controller
 {
+    public function login()
+    {
+        return view('admin.login-admin');
+    }
+
+    public function authenticate(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => 'required|email:dns',
+            'password' => 'required|min:8|max:16'
+        ]);
+
+        $admin = Admin::where('email', '=', $credentials['email'])->exists();
+
+        if ($admin) {
+            if (Auth::guard('admin')->attempt($credentials, $remember = true)) {
+                $request->session()->regenerate();
+
+                return redirect('admins');
+            }
+        }
+
+        return back()->with('loginStatus', 'Login Failed! Please try again.');
+    }
+
+    public function logout()
+    {
+        Session::flush();
+
+        Auth::guard('admin')->logout();
+
+        return redirect('messages');
+    }
+
     public function index()
     {
         $messages = Message::withTrashed()->latest('id')->with('user')
@@ -20,11 +56,13 @@ class AdminController extends Controller
         ]);
     }
 
-    public function delete(Request $request)
+    public function destroy(Request $request)
     {
+        $buttonType = $request->button;
+
         $ids = explode(',', $request->id);
 
-        if ($request->button === "messages") {
+        if ($buttonType === "messages") {
             if (empty($request->id)) return back();
 
             $this->deleteImages($ids);
@@ -32,7 +70,7 @@ class AdminController extends Controller
         } else {
             $this->deleteImages($ids);
 
-            if ($request->button === "message") {
+            if ($buttonType === "message") {
                 Message::destroy($request->id);
             }
         }
@@ -40,7 +78,7 @@ class AdminController extends Controller
         return back();
     }
 
-    public function deleteImages($ids)
+    private function deleteImages($ids)
     {
         foreach ($ids as $id) {
             $message    = Message::find($id);
@@ -56,8 +94,8 @@ class AdminController extends Controller
         }
     }
 
-    public function recover(Request $request)
+    public function restore($id)
     {
-        return Message::withTrashed()->find($request->id)->restore();
+        return Message::withTrashed()->find($id)->restore();
     }
 }

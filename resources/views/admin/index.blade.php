@@ -7,7 +7,7 @@
 
             <header class="main-header">
                 <!-- Logo -->
-                <a href="{{ route('admin.index') }}" class="logo">
+                <a href="#" class="logo">
                     <!-- mini logo for sidebar mini 50x50 pixels -->
                     <span class="logo-mini"><b>T</b>D</span>
                     <!-- logo for regular state and mobile devices -->
@@ -39,7 +39,8 @@
                                     <!-- Menu Footer-->
                                     <li class="user-footer">
                                         <div class="text-right">
-                                            <a href="{{ route('logout') }}" class="btn btn-danger btn-flat">Sign out</a>
+                                            <a href="{{ route('admins.logout') }}" class="btn btn-danger btn-flat">Sign
+                                                out</a>
                                         </div>
                                     </li>
                                 </ul>
@@ -55,7 +56,7 @@
                     <!-- sidebar menu: : style can be found in sidebar.less -->
                     <ul class="sidebar-menu" data-widget="tree">
                         <li class="{{ $page === 'home' ? 'active' : '' }}">
-                            <a href="{{ route('admin.index') }}"><i class="fa fa-dashboard"></i>
+                            <a href="#"><i class="fa fa-dashboard"></i>
                                 <span>Dashboard</span>
                             </a>
                         </li>
@@ -265,7 +266,7 @@
                 aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <form action="{{ route('admin.delete') }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('admins.destroy') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <input type="hidden" name="id" id="idMessage">
                             <input type="hidden" name="button" id="buttonType">

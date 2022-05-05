@@ -49,7 +49,7 @@
                 <h1 class="text-green mb-30"><b>Level 8 Challenge</b></h1>
             </div>
 
-            <form action="{{ route('store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('messages.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 @auth

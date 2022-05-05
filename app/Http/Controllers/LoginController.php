@@ -21,21 +21,10 @@ class LoginController extends Controller
             'password' => 'required|min:8|max:16'
         ]);
 
-        $admin = Admin::where('email', '=', $credentials['email'])->exists();
+        if (Auth::attempt($credentials, $remember = true)) {
+            $request->session()->regenerate();
 
-        if ($admin) {
-            if (Auth::guard('admin')->attempt($credentials, $remember = true)) {
-                $request->session()->regenerate();
-
-                return redirect()->route('admin.index');
-            }
-        } else {
-            if (Auth::attempt($credentials, $remember = true)) {
-                $request->session()->regenerate();
-
-                return redirect('')
-                    ->with('loginStatus', ', you are logged in now.',);
-            }
+            return redirect('messages')->with('loginStatus', ', you are logged in now.',);
         }
 
         return back()->with('loginStatus', 'Login Failed! Please try again.');
@@ -45,11 +34,8 @@ class LoginController extends Controller
     {
         Session::flush();
 
-        if (Auth::guard('admin')->check())
-            Auth::guard('admin')->logout();
-        else
-            Auth::logout();
+        Auth::logout();
 
-        return redirect('');
+        return redirect('messages');
     }
 }

@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Message;
 use App\Models\User;
+use Error;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -38,6 +40,8 @@ class MessageController extends Controller
             'image' => 'nullable|image|mimes:png,jpg,svg,jpeg,gif|max:1024',
         ]);
 
+        $user = User::findOrFail($request->user_id);
+
         $message = new Message;
 
         $message->name      = $request->name;
@@ -50,7 +54,6 @@ class MessageController extends Controller
             $message->image_name    = explode('/', $imagePath)[2];
         }
 
-        $user = User::find($request->user_id);
         $message->user()->associate($user);
 
         $message->save();
@@ -58,28 +61,14 @@ class MessageController extends Controller
         return back();
     }
 
-    public function passwordValidation(Request $request)
+    public function show($id)
     {
-        $hashedPassword = Message::find($request->id)->password;
-
-        return Hash::check($request->password, $hashedPassword);
+        return Message::find($id);
     }
 
-    public function memberValidation(Request $request)
+    public function update(Request $request, $id)
     {
-        $message = Message::find($request->id);
-
-        return $message->user_id === $message->user->id;
-    }
-
-    public function getDetail(Request $request)
-    {
-        return Message::find($request->id);
-    }
-
-    public function update(Request $request)
-    {
-        if (!($this->passwordValidation($request) || $this->memberValidation($request))) return false;
+        if (!($this->passwordValidation($request) || $this->memberValidation($id))) return new Error("Update data failed!");
 
         $request->validate([
             'nameEdit' => 'required|min:3|max:16',
@@ -89,7 +78,7 @@ class MessageController extends Controller
             'imageEdit' => 'nullable|image|mimes:png,jpg,svg,jpeg,gif|max:2048',
         ]);
 
-        $messageUpdate = Message::find($request->id);
+        $messageUpdate = Message::find($id);
 
         $messageUpdate->name    = $request->nameEdit;
         $messageUpdate->title   = $request->titleEdit;
@@ -111,16 +100,34 @@ class MessageController extends Controller
             $messageUpdate->image_name  = explode('/', $imagePath)[2];
         }
 
-        return $messageUpdate->save();
+        if ($messageUpdate->save() === [] || $messageUpdate->save() === false) {
+            return null;
+        }
+
+        return true;
     }
 
-    public function delete(Request $request)
+    public function destroy(Request $request)
     {
-        if (!($this->passwordValidation($request) || $this->memberValidation($request))) return false;
+        if (!($this->passwordValidation($request) || $this->memberValidation($request->id))) return false;
 
         Message::find($request->id)->forceDelete();
         Storage::delete($request->image);
 
         return back();
+    }
+
+    public function passwordValidation(Request $request)
+    {
+        $hashedPassword = Message::find($request->id)->password;
+
+        return Hash::check($request->password, $hashedPassword);
+    }
+
+    protected function memberValidation($id)
+    {
+        $message = Message::find($id);
+
+        return $message->user_id === $message->user->id;
     }
 }

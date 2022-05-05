@@ -18,10 +18,10 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::guard('admin')->user() && Admin::where('email', '=', Auth::guard('admin')->user()->email)->exists()) {
+        if (Auth::guard('admin')->user()) {
             return $next($request);
         }
 
-        return redirect('');
+        return redirect()->route('admins.login');
     }
 }

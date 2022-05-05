@@ -10,9 +10,8 @@ $(document).ready(function() {
         const button = $(this).data('button');
 
         $.ajax({
-            url: 'message/get',
-            data: {id: id},
-            method: 'post',
+            url: 'messages/'+id,
+            method: 'get',
             success: (response) => {
                 $('#idMessage').val(response.id);
                 $('#buttonType').val(button);
@@ -46,8 +45,7 @@ $(document).ready(function() {
         const id = $(this).data('id');
 
         $.ajax({
-            url: 'admin/recover',
-            data: {id:id},
+            url: 'admins/restore/'+id,
             method: 'post',
             success: (response) => {
                 location.reload();

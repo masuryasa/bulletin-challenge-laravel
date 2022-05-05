@@ -47,3 +47,11 @@
 - Sederhanakan validasi isMember :heavy_check_mark:
 - Operator `==` dijadikan `===` :heavy_check_mark:
 - Penamaan variable buat lebih jelas/eksplisit, seperti `$emailVerifiedNull` jadi `$isEmailVerified` :heavy_check_mark:
+
+### 5
+
+- Bedakan controller login member dan admin :heavy_check_mark:
+- Perbaiki flow AJAX validasi password :heavy_check_mark:
+- Bedakan routes member (web) dan admin - (RouteServiceProvider.php) :heavy_check_mark:
+- Terapkan Route::resources :heavy_check_mark:
+- Coba terapkan authentication dengan Laravel Breeze
