@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\Message;
 use App\Models\User;
 use Error;
-use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 

@@ -12,7 +12,7 @@ class AdminController extends Controller
 {
     public function login()
     {
-        return view('admin.login-admin');
+        return view('admin.login');
     }
 
     public function authenticate(Request $request)
@@ -25,7 +25,7 @@ class AdminController extends Controller
         $admin = Admin::where('email', '=', $credentials['email'])->exists();
 
         if ($admin) {
-            if (Auth::guard('admin')->attempt($credentials, $remember = true)) {
+            if (Auth::guard('admin')->attempt($credentials)) {
                 $request->session()->regenerate();
 
                 return redirect('admins');

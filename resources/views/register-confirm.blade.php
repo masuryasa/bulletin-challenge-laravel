@@ -30,6 +30,7 @@
                             <td><input type="text" name="password" value="{{ $user['password'] }}" readonly
                                     style="border: none"></td>
                         </tr>
+                        <input type="hidden" name="password_confirmation" value="{{ $user['password'] }}">
                     </tbody>
                 </table>
             </div>

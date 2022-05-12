@@ -22,12 +22,22 @@
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                         <ul class="nav navbar-nav navbar-right">
                             @auth
-                                <li><a href="{{ route('messages.logout') }}">Logout</a></li>
+                                {{-- <li><a href="{{ route('logout') }}">Logout</a></li> --}}
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+
+                                        <a href={{ route('logout') }} id="logout"
+                                            onclick="event.preventDefault(); this.closest('form').submit();">
+                                            {{ __('Logout') }}
+                                        </a>
+                                    </form>
+                                </li>
                             @endauth
 
                             @guest
-                                <li><a href="{{ route('messages.login') }}">Login</a></li>
-                                <li><a href="{{ route('register-form') }}">Register</a></li>
+                                <li><a href="{{ route('login') }}">Login</a></li>
+                                <li><a href="{{ route('register') }}">Register</a></li>
                             @endguest
                         </ul>
                     </div><!-- /.navbar-collapse -->

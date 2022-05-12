@@ -31,6 +31,15 @@
             white-space: pre-wrap;
         }
 
+        #logout {
+            position: relative;
+            display: block;
+            padding-left: 15px;
+            padding-right: 15px;
+            padding-top: 15px;
+            padding-bottom: 15px;
+        }
+
     </style>
 
     {{-- JS scripts --}}

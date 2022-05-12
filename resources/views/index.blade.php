@@ -1,47 +1,42 @@
 @extends('layout.user')
+
 @section('main-container')
 
-    @if (session()->has('loginStatus'))
-        <div class="row" id="rowAlert">
-            <div class="col-md-6 col-md-offset-3 p-30">
-                <div class="alert alert-success alert-dismissible" role="alert">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
-                    <b>{{ $authUserName }}</b>{{ session('loginStatus') }}
-                    @if (!$isEmailVerified)
-                        <div id="sentMessage">
-                            <form action="{{ route('verification.send') }}" method="POST" class="d-inline">
-                                @csrf
-                                Please click this
-                                <button type="submit" class="d-inline btn btn-link p-0" id="resend-verification">
-                                    link
-                                </button> to verificate your email first to see messages data!.
-                            </form>
+    @auth
+        @if (!$isEmailVerified)
+            <div class="row" id="rowAlert2">
+                <div class="col-md-6 col-md-offset-3">
+                    <div class="panel panel-warning">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Resend Email Verification</h3>
                         </div>
-                    @endif
-                </div>
-            </div>
-        </div>
-    @endif
+                        <div class="panel-body">
+                            <p>
+                                Thanks for signing up! Before getting started, could you verify your email address
+                                by clicking on the link we just emailed to you? If you didn't receive the email, we will gladly
+                                send
+                                you another.
+                            </p>
 
-    <div class="row" id="rowAlert2" style="display: none">
-        <div class="col-md-6 col-md-offset-3 p-30">
-            <div class="alert alert-success alert-dismissible" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
-                <b>Verify your email!</b> To be able to post a message.
-                <div id="sentMessage">
-                    <form action="{{ route('verification.send') }}" method="POST" class="d-inline">
-                        @csrf
-                        Please click this
-                        <button type="submit" class="d-inline btn btn-link p-0" id="resend-verification">
-                            link
-                        </button> to verificate your email!.
-                    </form>
+                            <div style="margin-top: 10px;">
+                                @if (session('status') == 'verification-link-sent')
+                                    <div class="alert alert-success alert-dismissible" role="alert">
+                                        A new verification link has been sent to the email address you provided during
+                                        registration.
+                                    </div>
+                                @endif
+
+                                <form action="{{ route('verification.send') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-primary">Resend Verification Email</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
+        @endif
+    @endauth
 
     <div class="row">
         <div class="col-md-6 col-md-offset-3 bg-white p-30 box">

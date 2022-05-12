@@ -14,9 +14,9 @@ $.ajaxSetup({
 $(document).ready(function() {
     $('#rowAlert').fadeTo(7000, 500).fadeOut();
 
-    $('#unverified_submit').on('click', function() {
-        $('#rowAlert2').fadeTo(5000, 500).fadeOut();
-    });
+    // $('#unverified_submit').on('click', function() {
+    //     $('#rowAlert2').fadeTo(5000, 500).fadeOut();
+    // });
 
     $('#resend-verification').on('click', function() {
         setTimeout(() => {

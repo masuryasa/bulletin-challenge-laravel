@@ -1,25 +1,18 @@
 @extends('layout.template')
 
-@section('title', '| Register')
+@section('title', '| Reset Password')
 
-<body id="login">
+<body>
     <div class="box login-box">
         <div class="login-box-head">
-            <h1 class="mb-5">Register</h1>
-            <p class="text-lgray">Please fill the information below...</p>
+            <h1 class="mb-5">Reset Password</h1>
+            <p class="text-lgray">Please set your new password</p>
         </div>
-        <form action="{{ route('confirm') }}" method="POST">
+        <form action="{{ route('password.update') }}" method="POST">
             @csrf
+            <input type="hidden" name="token" value="{{ $request->route('token') }}">
+
             <div class="login-box-body">
-                <div class="form-group">
-                    <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
-                        value="{{ old('name') }}" placeholder="Name" required>
-                    @error('name')
-                        <div class="invalid-input">
-                            {{ $message }}
-                        </div>
-                    @enderror
-                </div>
                 <div class="form-group">
                     <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
                         value="{{ old('email') }}" placeholder="E-mail" required>
@@ -32,7 +25,7 @@
                 <div class="form-group">
                     <input type="password" name="password" class="form-control @error('password') is-invalid @enderror"
                         placeholder="Password" required>
-                    @error('password')
+                    @error('email')
                         <div class="invalid-input">
                             {{ $message }}
                         </div>
@@ -40,9 +33,9 @@
                 </div>
                 <div class="form-group">
                     <input type="password" name="password_confirmation"
-                        class="form-control @error('password') is-invalid @enderror" placeholder="Confirmation Password"
-                        required>
-                    @error('password')
+                        class="form-control @error('password_confirmation') is-invalid @enderror"
+                        placeholder="Confirmation Password" required>
+                    @error('email')
                         <div class="invalid-input">
                             {{ $message }}
                         </div>
@@ -51,8 +44,7 @@
             </div>
             <div class="login-box-footer">
                 <div class="text-right">
-                    <a href="{{ route('messages.index') }}" class="btn btn-default">Back</a>
-                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="submit" class="btn btn-primary">Reset Password</button>
                 </div>
             </div>
         </form>

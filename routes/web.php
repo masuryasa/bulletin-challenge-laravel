@@ -1,9 +1,8 @@
 <?php
 
-use App\Http\Controllers\{MessageController, UserController, LoginController};
-use Illuminate\Http\Request;
+use App\Http\Controllers\MessageController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,36 +15,16 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 |
 */
 
-Route::group(
-    [
-        'prefix' => 'messages',
-    ],
-    function () {
-        Route::get('login', [LoginController::class, 'login'])->name('messages.login');
-        Route::post('login', [LoginController::class, 'authenticate'])->name('messages.login.action');
-        Route::get('logout', [LoginController::class, 'logout'])->name('messages.logout');
+Route::get('/', function () {
+    return redirect('messages');
+});
 
-        Route::post('destroy', [MessageController::class, 'destroy'])->name('messages.destroy');
-        Route::post('password-validation', [MessageController::class, 'passwordValidation']);
-    }
-);
+Route::prefix('messages')->group(function () {
+    Route::post('destroy', [MessageController::class, 'destroy'])->name('messages.destroy');
+
+    Route::post('password-validation', [MessageController::class, 'passwordValidation']);
+});
 
 Route::resource('messages', MessageController::class)->except('destroy');
 
-Route::prefix('register')->group(function () {
-    Route::get('', [UserController::class, 'index'])->name('register-form');
-    Route::post('', [UserController::class, 'register'])->name('register');
-    Route::post('confirm', [UserController::class, 'confirm'])->name('confirm');
-
-    Route::get('/email/verify', [UserController::class, 'registerNotification'])->name('verification.notice');
-    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-        $request->fulfill();
-
-        return redirect()->route('messages.index');
-    })->middleware(['auth', 'signed'])->name('verification.verify');
-    Route::post('/email/verification-notification', function (Request $request) {
-        $request->user()->sendEmailVerificationNotification();
-
-        return back()->with('message', 'Verification link sent!');
-    })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
-});
+require __DIR__ . '/auth.php';

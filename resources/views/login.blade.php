@@ -20,7 +20,7 @@
             <h1 class="mb-5">Login</h1>
             <p class="text-lgray">Please login to continue...</p>
         </div>
-        <form action="{{ route('messages.login.action') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('login') }}" method="POST">
             @csrf
             <div class="login-box-body">
                 <div class="form-group">
@@ -45,7 +45,14 @@
                 </div>
             </div>
             <div class="login-box-footer">
+                <div class="form-check">
+                    <input id="remember_me" type="checkbox" name="remember">
+                    <label class="form-check-label" for="remember_me">
+                        Remember me
+                    </label>
+                </div>
                 <div class="text-right">
+                    <a href="{{ route('password.request') }}" class="btn"><u>Forgot your password?</u></a>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
             </div>
