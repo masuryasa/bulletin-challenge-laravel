@@ -40,7 +40,7 @@ $(document).ready(function() {
         let res = false;
 
         $.ajax({
-            url: 'messages/password-validation',
+            url: 'password-validation',
             method: 'post',
             async: false,
             data: {
@@ -196,8 +196,9 @@ $(document).ready(function() {
                     url: 'messages/'+id,
                     method: 'get',
                     success: (response) => {
+                        $('#formDelete').attr('action','messages/'+response.id);
                         $('#invalidPassword'+id).text('');
-                        $('#idDelete').val(response.id);
+                        // $('#idDelete').val(response.id);
                         $('#passwordDelete').val(password);
                         $('#oldImagePathDelete').val('public/images/'+response.image_name);
                     },
@@ -209,6 +210,7 @@ $(document).ready(function() {
         }
 
         resetInvalidPasswordMessage(id, modalDelete);
+        // console.log($('#formDelete').attr('action'));
     });
 });
 
