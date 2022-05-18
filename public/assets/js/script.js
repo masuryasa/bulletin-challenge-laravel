@@ -94,7 +94,6 @@ $(document).ready(function() {
             $.ajax({
                 url: 'messages/'+id,
                 method: 'get',
-                data: {id: id},
                 success: (response) => {
                     modalEdit.modal('show');
                     fillFormEdit(response)
@@ -174,9 +173,8 @@ $(document).ready(function() {
             $.ajax({
                 url: 'messages/'+id,
                 method: 'get',
-                data: {id: id},
                 success: (response) => {
-                    $('#idDelete').val(response.id);
+                    $('#formDelete').attr('action','messages/'+response.id);
                     $('#oldImagePathDelete').val('public/images/'+response.image_name);
                 },
                 error: (response) => {
@@ -198,7 +196,6 @@ $(document).ready(function() {
                     success: (response) => {
                         $('#formDelete').attr('action','messages/'+response.id);
                         $('#invalidPassword'+id).text('');
-                        // $('#idDelete').val(response.id);
                         $('#passwordDelete').val(password);
                         $('#oldImagePathDelete').val('public/images/'+response.image_name);
                     },
@@ -210,7 +207,6 @@ $(document).ready(function() {
         }
 
         resetInvalidPasswordMessage(id, modalDelete);
-        // console.log($('#formDelete').attr('action'));
     });
 });
 

@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Message;
 use App\Models\User;
-use Error;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -40,8 +39,6 @@ class MessageController extends Controller
             'image' => 'nullable|image|mimes:png,jpg,svg,jpeg,gif|max:1024',
         ]);
 
-        $user = User::findOrFail($request->user_id);
-
         $message = new Message;
 
         $message->name      = $request->name;
@@ -54,7 +51,10 @@ class MessageController extends Controller
             $message->image_name    = explode('/', $imagePath)[2];
         }
 
-        $message->user()->associate($user);
+        if (isset($request->user_id)) {
+            $user = User::findOrFail($request->user_id);
+            $message->user()->associate($user);
+        }
 
         $message->save();
 
@@ -68,7 +68,9 @@ class MessageController extends Controller
 
     public function update(Request $request, $id)
     {
-        if (!($this->passwordValidation($request) || $this->memberValidation($id))) return new Error("Update data failed!");
+        if (!($this->passwordValidation($request, $id) || $this->memberValidation($id))) {
+            throw new Exception("Update data failed!");
+        }
 
         $request->validate([
             'nameEdit' => 'required|min:3|max:16',
@@ -107,15 +109,22 @@ class MessageController extends Controller
         return true;
     }
 
-    public function destroy($id, Request $request)
+    public function destroy(Request $request, $id)
     {
-        if (!($this->passwordValidation($request, $id) || $this->memberValidation($request->id))) return false;
+        if (!($this->passwordValidation($request, $id) || $this->memberValidation($id))) {
+            return false;
+        }
 
         Message::find($id)->forceDelete();
         Storage::delete($request->image);
 
         return back();
     }
+
+    /*
+        Placement of $msg_id param with default value of null is because
+        when it's accessed from jQuery AJAX, which the value of 'id' and 'password' will send as a request
+    */
 
     public function passwordValidation(Request $request, $msg_id = null)
     {
@@ -127,8 +136,12 @@ class MessageController extends Controller
 
     protected function memberValidation($id)
     {
+        if (!Auth::check()) {
+            return false;
+        }
+
         $message = Message::find($id);
 
-        return $message->user_id === $message->user->id;
+        return $message->user_id === Auth::user()->id;
     }
 }
