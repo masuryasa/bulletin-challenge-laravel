@@ -67,7 +67,7 @@ class MessageController extends Controller
 
     public function update(Request $request, $id)
     {
-        if (!($this->passwordValidation($request) || $this->memberValidation($id))) return new Error("Update data failed!");
+        if (!($this->passwordValidation($request, $id) || $this->memberValidation($id))) return new Error("Update data failed!");
 
         $request->validate([
             'nameEdit' => 'required|min:3|max:16',
@@ -106,19 +106,20 @@ class MessageController extends Controller
         return true;
     }
 
-    public function destroy(Request $request)
+    public function destroy(Request $request, $id)
     {
-        if (!($this->passwordValidation($request) || $this->memberValidation($request->id))) return false;
+        if (!($this->passwordValidation($request, $id) || $this->memberValidation($id))) return false;
 
-        Message::find($request->id)->forceDelete();
+        Message::find($id)->forceDelete();
         Storage::delete($request->image);
 
         return back();
     }
 
-    public function passwordValidation(Request $request)
+    public function passwordValidation(Request $request, $msg_id = null)
     {
-        $hashedPassword = Message::find($request->id)->password;
+        $id = $msg_id ?? $request->id;
+        $hashedPassword = Message::find($id)->password;
 
         return Hash::check($request->password, $hashedPassword);
     }

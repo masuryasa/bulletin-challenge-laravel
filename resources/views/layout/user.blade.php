@@ -159,9 +159,9 @@
         <div class="modal modal-delete fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <form action="{{ route('messages.destroy') }}" method="POST" enctype="multipart/form-data">
+                    <form method="POST" enctype="multipart/form-data" id="formDelete">
+                        @method('delete')
                         @csrf
-                        <input type="hidden" name="id" id="idDelete">
                         <input type="hidden" name="password" id="passwordDelete">
                         <input type="hidden" name="image" id="oldImagePathDelete">
                         <div class="modal-header">

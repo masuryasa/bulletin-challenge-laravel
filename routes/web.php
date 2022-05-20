@@ -19,12 +19,8 @@ Route::get('/', function () {
     return redirect('messages');
 });
 
-Route::prefix('messages')->group(function () {
-    Route::post('destroy', [MessageController::class, 'destroy'])->name('messages.destroy');
+Route::post('password-validation', [MessageController::class, 'passwordValidation']);
 
-    Route::post('password-validation', [MessageController::class, 'passwordValidation']);
-});
-
-Route::resource('messages', MessageController::class)->except('destroy');
+Route::resource('messages', MessageController::class);
 
 require __DIR__ . '/auth.php';
